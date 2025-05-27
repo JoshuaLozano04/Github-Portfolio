@@ -68,3 +68,44 @@ color: #555555;
     border-radius: 12px;
     padding: 20px;
   }
+
+
+/* Projects */
+
+
+#projects {
+  background-color: #0c0a1b;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+
+}
+
+#projects p{
+    font-size: 1rem;
+    color: #ffffff;
+}
+
+#projects h5{
+    color: #ffffff;
+}
+
+
+#projects img{
+  width: 20rem;
+  height: 20rem;
+}
+
+.projects-container {
+    display: flex;
+    justify-content: center; 
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.card {
+  width: 20rem;
+  height: 35rem;
+  background-color: #15122e;
+}
