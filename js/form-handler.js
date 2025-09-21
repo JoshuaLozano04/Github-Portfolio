@@ -93,10 +93,10 @@ class FormHandler {
     async handleFormSubmission(formName, form) {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-        
+
         // Validate form
         const validation = this.validateForm(formName, data);
-        
+
         if (!validation.isValid) {
             this.showValidationErrors(form, validation.errors);
             return;
@@ -108,9 +108,19 @@ class FormHandler {
         this.setLoadingState(submitButton, true);
 
         try {
+            if (formName === 'contact') {
+                // Send email using mailto as a fallback (client-side only)
+                const subject = encodeURIComponent(data.subject);
+                const body = encodeURIComponent(`Name: ${data.name}\nEmail: ${data.email}\nMessage: ${data.message}`);
+                window.location.href = `mailto:melchizedek.lozano@gmail.com?subject=${subject}&body=${body}`;
+                this.showSuccessMessage(form, "Your email client should open. If not, please email me directly.");
+                form.reset();
+                this.clearValidationErrors(form);
+                return;
+            }
             // Simulate API call (replace with actual endpoint)
             const response = await this.submitForm(formName, data);
-            
+
             if (response.success) {
                 this.showSuccessMessage(form, response.message);
                 form.reset();
