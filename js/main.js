@@ -8,50 +8,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Initialize all app functionality
 function initializeApp() {
-    initNavigation();
     initScrollEffects();
     initBackToTop();
     initSmoothScrolling();
-    initMobileMenu();
     initProjectFilter();
     initFormValidation();
     initLoadingAnimations();
-}
-
-// Navigation functionality
-function initNavigation() {
-    const navbar = document.getElementById('navbar');
-    const navLinks = document.querySelectorAll('.nav-link');
-    
-    // Navbar scroll effect
-    window.addEventListener('scroll', function() {
-        if (window.scrollY > 100) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-    });
-    
-    // Active link highlighting
-    window.addEventListener('scroll', function() {
-        let current = '';
-        const sections = document.querySelectorAll('section');
-        
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.clientHeight;
-            if (window.scrollY >= (sectionTop - 200)) {
-                current = section.getAttribute('id');
-            }
-        });
-        
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === `#${current}`) {
-                link.classList.add('active');
-            }
-        });
-    });
 }
 
 // Theme toggle functionality removed
@@ -60,30 +22,24 @@ function initNavigation() {
 function initScrollEffects() {
     // Intersection Observer for scroll animations
     const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
+        threshold: 0.18,
+        rootMargin: '0px 0px -10% 0px'
     };
     
     const observer = new IntersectionObserver(function(entries) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.classList.add('animated');
-                
-                // Add staggered animation to child elements
-                const children = entry.target.querySelectorAll('.skill-item, .project-card, .timeline-item');
-                children.forEach((child, index) => {
-                    setTimeout(() => {
-                        child.classList.add('fade-in-up');
-                    }, index * 100);
-                });
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
     
     // Observe elements for animation
-    const animateElements = document.querySelectorAll('.skills, .projects, .experience, .about');
+    const animateElements = document.querySelectorAll('section[id]:not(.hero)');
     animateElements.forEach(el => {
         el.classList.add('animate-on-scroll');
+        el.classList.add('section-reveal');
         observer.observe(el);
     });
 }
@@ -120,42 +76,37 @@ function initSmoothScrolling() {
             const targetSection = document.querySelector(targetId);
             
             if (targetSection) {
-                const offsetTop = targetSection.offsetTop - 70; // Account for fixed navbar
-                
-                window.scrollTo({
-                    top: offsetTop,
-                    behavior: 'smooth'
-                });
-                
-                // Close mobile menu if open
-                const navMenu = document.getElementById('nav-menu');
-                const navToggle = document.getElementById('nav-toggle');
-                if (navMenu.classList.contains('active')) {
-                    navMenu.classList.remove('active');
-                    navToggle.classList.remove('active');
-                }
+                const targetTop = Math.max(targetSection.getBoundingClientRect().top + window.pageYOffset - 24, 0);
+
+                smoothScrollTo(targetTop, 850);
             }
         });
     });
 }
 
-// Mobile menu functionality
-function initMobileMenu() {
-    const navToggle = document.getElementById('nav-toggle');
-    const navMenu = document.getElementById('nav-menu');
-    
-    navToggle.addEventListener('click', function() {
-        navMenu.classList.toggle('active');
-        navToggle.classList.toggle('active');
-    });
-    
-    // Close menu when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!navMenu.contains(e.target) && !navToggle.contains(e.target)) {
-            navMenu.classList.remove('active');
-            navToggle.classList.remove('active');
+// Eased scrolling for anchor navigation
+function smoothScrollTo(targetY, duration = 850) {
+    const startY = window.pageYOffset;
+    const distance = targetY - startY;
+    const startTime = performance.now();
+
+    function easeInOutCubic(t) {
+        return t < 0.5
+            ? 4 * t * t * t
+            : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    function step(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+
+        if (progress < 1) {
+            requestAnimationFrame(step);
         }
-    });
+    }
+
+    requestAnimationFrame(step);
 }
 
 // Project filtering

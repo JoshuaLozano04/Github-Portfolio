@@ -7,6 +7,7 @@
 
 html {
     scroll-behavior: smooth;
+    scroll-padding-top: 32px;
 }
 
 body {
@@ -20,34 +21,36 @@ body {
 /* CSS Custom Properties (Variables) */
 :root {
     /* Light Theme */
-    --primary-color: #2563eb;
-    --secondary-color: #64748b;
-    --accent-color: #f59e0b;
-    --text-color: #1e293b;
-    --text-light: #64748b;
-    --bg-color: #ffffff;
-    --bg-secondary: #f8fafc;
-    --bg-tertiary: #f1f5f9;
-    --border-color: #e2e8f0;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-    --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --primary-color: #1d4ed8;
+    --primary-rgb: 29, 78, 216;
+    --secondary-color: #475569;
+    --accent-color: #0f766e;
+    --text-color: #0f172a;
+    --text-light: #475569;
+    --bg-color: #f8fafc;
+    --bg-secondary: #eef2f7;
+    --bg-tertiary: #e2e8f0;
+    --border-color: #cbd5e1;
+    --shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.08);
+    --shadow-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.12);
+    --gradient: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
 }
 
 /* Dark Theme */
 [data-theme="dark"] {
-    --primary-color: #3b82f6;
+    --primary-color: #60a5fa;
+    --primary-rgb: 96, 165, 250;
     --secondary-color: #94a3b8;
-    --accent-color: #fbbf24;
-    --text-color: #f1f5f9;
+    --accent-color: #2dd4bf;
+    --text-color: #e2e8f0;
     --text-light: #94a3b8;
-    --bg-color: #0f172a;
-    --bg-secondary: #1e293b;
-    --bg-tertiary: #334155;
-    --border-color: #475569;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-    --gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    --bg-color: #0b1120;
+    --bg-secondary: #111827;
+    --bg-tertiary: #1f2937;
+    --border-color: #334155;
+    --shadow: 0 4px 6px -1px rgba(2, 6, 23, 0.35);
+    --shadow-lg: 0 20px 25px -5px rgba(2, 6, 23, 0.45);
+    --gradient: linear-gradient(135deg, #1e3a8a 0%, #0f766e 100%);
 }
 
 /* Navigation */
@@ -171,6 +174,10 @@ a:hover {
     padding: 0 2rem;
 }
 
+section {
+    scroll-margin-top: 32px;
+}
+
 /* Section Headers */
 .section-header {
     text-align: center;
@@ -254,7 +261,7 @@ a:hover {
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="%23667eea" stop-opacity="0.1"/><stop offset="100%" stop-color="%23764ba2" stop-opacity="0.05"/></radialGradient></defs><rect width="100%" height="100%" fill="url(%23a)"/></svg>');
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="%231d4ed8" stop-opacity="0.08"/><stop offset="100%" stop-color="%230f766e" stop-opacity="0.04"/></radialGradient></defs><rect width="100%" height="100%" fill="url(%23a)"/></svg>');
     z-index: 1;
 }
 
@@ -356,16 +363,26 @@ a:hover {
     bottom: 2rem;
     left: 50%;
     transform: translateX(-50%);
-    animation: bounce 2s infinite;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.5);
+    color: var(--text-color);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(203, 213, 225, 0.12);
+    box-shadow: var(--shadow);
+    z-index: 2;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
 }
 
-.scroll-arrow {
-    width: 30px;
-    height: 30px;
-    border: 2px solid var(--primary-color);
-    border-top: none;
-    border-left: none;
-    transform: rotate(45deg);
+.scroll-indicator i {
+    font-size: 0.95rem;
+    animation: bounce 2s infinite;
 }
 
 /* About Section */
@@ -542,7 +559,7 @@ a:hover {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(15, 23, 42, 0.82);
     display: flex;
     align-items: center;
     justify-content: center;

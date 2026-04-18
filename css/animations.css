@@ -6,6 +6,44 @@
     animation: fadeIn 1s ease-in-out forwards;
 }
 
+/* Section Reveal Animations */
+.section-reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    filter: blur(2px);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), filter 0.8s ease;
+    will-change: opacity, transform, filter;
+}
+
+.section-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+}
+
+.section-reveal .section-header,
+.section-reveal .about-content,
+.section-reveal .skills-content,
+.section-reveal .projects-filter,
+.section-reveal .projects-grid,
+.section-reveal .contact-content,
+.section-reveal .timeline {
+    transform: translateY(16px);
+    opacity: 0;
+    transition: opacity 0.7s ease 0.12s, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.12s;
+}
+
+.section-reveal.is-visible .section-header,
+.section-reveal.is-visible .about-content,
+.section-reveal.is-visible .skills-content,
+.section-reveal.is-visible .projects-filter,
+.section-reveal.is-visible .projects-grid,
+.section-reveal.is-visible .contact-content,
+.section-reveal.is-visible .timeline {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .fade-in-up {
     opacity: 0;
     transform: translateY(30px);
@@ -149,14 +187,14 @@
 }
 
 .hover-glow:hover {
-    box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+    box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.35);
 }
 
 /* Loading Animations */
 .loading-spinner {
     width: 40px;
     height: 40px;
-    border: 4px solid #f3f3f3;
+    border: 4px solid var(--bg-tertiary);
     border-top: 4px solid var(--primary-color);
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -198,6 +236,22 @@
 .stagger-4 { animation-delay: 0.4s; }
 .stagger-5 { animation-delay: 0.5s; }
 .stagger-6 { animation-delay: 0.6s; }
+
+@media (prefers-reduced-motion: reduce) {
+    .section-reveal,
+    .section-reveal .section-header,
+    .section-reveal .about-content,
+    .section-reveal .skills-content,
+    .section-reveal .projects-filter,
+    .section-reveal .projects-grid,
+    .section-reveal .contact-content,
+    .section-reveal .timeline {
+        opacity: 1;
+        transform: none;
+        filter: none;
+        transition: none;
+    }
+}
 
 /* Keyframe Definitions */
 @keyframes fadeIn {
