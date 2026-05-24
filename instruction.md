@@ -131,3 +131,61 @@ Home should stay shorter than the other pages and act as the landing summary.
 - Local dev commands:
   - `npm start` — development server with hot reload (default local workflow)
   - `npm run serve` — production-style preview using `next start`
+
+## Session Changes (May 2026)
+
+### Projects Updates
+
+- **Added CarbonSense project**:
+  - Year: 2025
+  - Role: Backend Developer
+  - Multi-image carousel (5 images: carbonsense1.png through carbonsense5.png)
+  - Images served from `public/images/projects/carbonsense/`
+
+- **Image arrays support**:
+  - Extended `Project.image` type to accept `string | string[] | null`
+  - Single-image projects remain as strings; multi-image projects use arrays
+
+- **Implemented ImageCarousel component**:
+  - Displays project images with fade-in/fade-out transitions
+  - Interval: 3.5 seconds between images
+  - Uses `transition-opacity duration-700 ease-in-out`
+  - Integrated into `ProjectCard` component
+
+- **Sorted projects by year**:
+  - Projects now display descending by year (latest first)
+
+- **My Crew Manager images**:
+  - Copied from `images/projects/mycrewmanager/` to `public/images/projects/mycrewmanager/`
+  - Supports two-image carousel (mycrewmanagerdesktop.png, mycrewmanagerphone.png)
+
+### Home Skills Section Updates
+
+- **Categorized skill logos**:
+  - Reorganized Home skills into category-based grid layout
+  - Hidden 'Core Work Skills' and 'Education' from Home display (kept only on About page)
+
+- **Skill logo rendering**:
+  - Implemented `ToolIcon(name)` component: renders black and white SVG logos (h-8 w-8)
+  - Implemented `ToolLogos(label)` component: handles multiple logos per skill category label
+  - Implemented `getLogoKeys(label)` helper: maps combined labels to individual skill keys
+
+- **Logo styling**:
+  - Plain black and white SVGs (no colored backgrounds or circular containers)
+  - Size: h-8 w-8 (increased from h-6 w-6 for better visibility)
+  - Fallback: text initials for skills without custom logos
+
+- **Supported skill logos**:
+  - Programming: Python, Java, TypeScript, Kotlin, PHP
+  - Frontend: HTML, CSS, Flutter
+  - Backend: Node.js, Django, Laravel, PHP
+  - Databases: PostgreSQL, MySQL, MongoDB
+  - Cloud: AWS
+  - Game Dev: Ren'Py
+
+### Key Files Modified
+
+- `data/portfolio.ts`: Added CarbonSense, updated project structure, sorted by year
+- `components/portfolio-sections.tsx`: Added ImageCarousel, ToolIcon, ToolLogos, getLogoKeys; restructured Home skills; fixed JSX
+- `public/images/projects/mycrewmanager/`: Copied asset files
+- `public/images/projects/carbonsense/`: Carbonsense asset files (pre-existing)

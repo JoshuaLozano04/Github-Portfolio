@@ -1,10 +1,121 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
+import { FaAws } from 'react-icons/fa6';
+import {
+  SiCss,
+  SiDjango,
+  SiDocker,
+  SiFigma,
+  SiFlutter,
+  SiGithub,
+  SiGit,
+  SiHtml5,
+  SiKotlin,
+  SiLaravel,
+  SiMongodb,
+  SiMysql,
+  SiNodedotjs,
+  SiOpenjdk,
+  SiPhp,
+  SiPostgresql,
+  SiPython,
+  SiTypescript,
+  SiVercel
+} from 'react-icons/si';
 import { usePortfolio } from '@/components/portfolio-shell';
 import type { Project } from '@/data/portfolio';
 
 const categories: Array<Project['category'] | 'All'> = ['All', 'Web', 'Database', 'Desktop', 'Game', 'AI'];
+
+const skillIcons = {
+  java: SiOpenjdk,
+  python: SiPython,
+  typescript: SiTypescript,
+  kotlin: SiKotlin,
+  php: SiPhp,
+  html: SiHtml5,
+  css: SiCss,
+  flutter: SiFlutter,
+  node: SiNodedotjs,
+  django: SiDjango,
+  laravel: SiLaravel,
+  postgresql: SiPostgresql,
+  mysql: SiMysql,
+  mongodb: SiMongodb,
+  aws: FaAws,
+  git: SiGit,
+  github: SiGithub,
+  docker: SiDocker,
+  vercel: SiVercel,
+  figma: SiFigma
+} as const;
+
+type SkillIconKey = keyof typeof skillIcons;
+
+type HomeSkillItem = {
+  label: string;
+  iconKey: SkillIconKey;
+};
+
+type HomeSkillGroup = {
+  title: string;
+  items: HomeSkillItem[];
+};
+
+const homeSkillGroups: HomeSkillGroup[] = [
+  {
+    title: 'Programming',
+    items: [
+      { label: 'Java', iconKey: 'java' },
+      { label: 'Python', iconKey: 'python' },
+      { label: 'TypeScript', iconKey: 'typescript' },
+      { label: 'Kotlin', iconKey: 'kotlin' },
+      { label: 'PHP', iconKey: 'php' }
+    ]
+  },
+  {
+    title: 'Frontend',
+    items: [
+      { label: 'HTML', iconKey: 'html' },
+      { label: 'CSS', iconKey: 'css' },
+      { label: 'Flutter', iconKey: 'flutter' }
+    ]
+  },
+  {
+    title: 'Backend',
+    items: [
+      { label: 'Node.js', iconKey: 'node' },
+      { label: 'Django', iconKey: 'django' },
+      { label: 'Laravel', iconKey: 'laravel' },
+      { label: 'PHP', iconKey: 'php' }
+    ]
+  },
+  {
+    title: 'Databases',
+    items: [
+      { label: 'PostgreSQL', iconKey: 'postgresql' },
+      { label: 'MySQL', iconKey: 'mysql' },
+      { label: 'MongoDB', iconKey: 'mongodb' }
+    ]
+  },
+  {
+    title: 'Cloud & Tools',
+    items: [
+      { label: 'AWS', iconKey: 'aws' },
+      { label: 'Git', iconKey: 'git' },
+      { label: 'GitHub', iconKey: 'github' },
+      { label: 'Docker', iconKey: 'docker' },
+      { label: 'Vercel', iconKey: 'vercel' },
+      { label: 'Figma', iconKey: 'figma' }
+    ]
+  }
+];
+
+function getSkillIcon(iconKey: SkillIconKey) {
+  return skillIcons[iconKey];
+}
 
 export function HomePage() {
   const { copy } = usePortfolio();
@@ -19,7 +130,9 @@ export function HomePage() {
               <span className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white">{copy.hero.eyebrow}</span>
               <h1 className="mt-4 max-w-[12ch] text-5xl font-semibold tracking-[-0.04em] text-white md:text-7xl">{copy.hero.title}</h1>
               <p className="mt-5 max-w-3xl text-base leading-8 text-neutral-300 md:text-lg">{copy.hero.summary}</p>
-              <p className="mt-5 text-sm text-neutral-400">Based in <span className="text-neutral-100">{copy.hero.location}</span></p>
+              <p className="mt-5 text-sm text-neutral-400">
+                Based in <span className="text-neutral-100">{copy.hero.location}</span>
+              </p>
 
               <div className="mt-7 flex flex-wrap items-center gap-3">
                 <ActionLink href="/contacts" icon={<ArrowRightIcon />} label="Contact me" variant="primary" />
@@ -54,19 +167,8 @@ export function HomePage() {
         <ActionLink href="/projects" icon={<ArrowRightIcon />} label="See more" variant="primary" />
       </div>
 
-      <SectionHeading title="Skills" description={copy.hero.aboutDescription} />
-      <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {copy.skills.map((group) => (
-          <article key={group.title} className="rounded-[1.5rem] border border-white/10 bg-neutral-950/80 p-6 shadow-soft">
-            <h3 className="text-lg font-semibold text-white">{group.title}</h3>
-            <div className="mt-5 flex flex-wrap gap-2.5">
-              {group.items.map((item) => (
-                <span key={item} className="rounded-full border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-neutral-200">{item}</span>
-              ))}
-            </div>
-          </article>
-        ))}
-      </section>
+      <SectionHeading title={copy.hero.toolsTitle} description={copy.hero.toolsDescription} />
+      <HomeSkillsPreview />
 
       <section className="rounded-[2rem] border border-white/10 bg-neutral-950/80 p-7 shadow-soft">
         <div className="flex items-center justify-between gap-4">
@@ -78,6 +180,49 @@ export function HomePage() {
         </div>
       </section>
     </main>
+  );
+}
+
+function HomeSkillsPreview() {
+  return (
+    <section className="grid gap-5 xl:grid-cols-2">
+      {homeSkillGroups.map((group) => (
+        <article
+          key={group.title}
+          className="group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-neutral-950/80 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.35)] transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_35px_100px_rgba(0,0,0,0.55)]"
+        >
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_36%)] opacity-70 transition-opacity duration-300 group-hover:opacity-100"
+          />
+          <div className="relative flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-neutral-500">Selected stack</p>
+              <h3 className="mt-2 text-xl font-semibold text-white">{group.title}</h3>
+            </div>
+            <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-neutral-300">{group.items.length} items</span>
+          </div>
+
+          <div className="relative mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {group.items.map((item) => {
+              const Icon = getSkillIcon(item.iconKey);
+
+              return (
+                <div
+                  key={item.label}
+                  className="group/item flex min-h-[108px] flex-col items-center justify-center gap-3 rounded-3xl border border-white/10 bg-white/[0.04] px-4 py-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.07] hover:shadow-[0_0_24px_rgba(255,255,255,0.08)]"
+                >
+                  <span className="grid h-14 w-14 place-items-center rounded-2xl border border-white/10 bg-black/40 text-neutral-200 transition duration-300 group-hover/item:border-white/20 group-hover/item:bg-black/55 group-hover/item:text-white group-hover/item:shadow-[0_0_24px_rgba(255,255,255,0.07)]">
+                    <Icon aria-hidden="true" className="h-7 w-7" />
+                  </span>
+                  <span className="text-sm font-medium leading-5 text-neutral-200 transition duration-300 group-hover/item:text-white">{item.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </article>
+      ))}
+    </section>
   );
 }
 
@@ -101,7 +246,12 @@ export function ProjectsPage() {
       <SectionHeading title={copy.hero.projectsTitle} description={copy.hero.projectsDescription} />
       <div className="flex flex-col gap-5 rounded-[2rem] border border-white/10 bg-neutral-950/80 p-5 shadow-soft lg:flex-row lg:items-center lg:justify-between">
         <div className="relative flex-1">
-          <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search projects, stacks, roles" className="w-full rounded-2xl border border-white/10 bg-neutral-950/90 px-4 py-3.5 pl-11 text-white outline-none placeholder:text-neutral-500" />
+          <input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search projects, stacks, roles"
+            className="w-full rounded-2xl border border-white/10 bg-neutral-950/90 px-4 py-3.5 pl-11 text-white outline-none placeholder:text-neutral-500"
+          />
           <svg className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-neutral-500" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" strokeWidth="1.7" />
             <path d="m16 16 5 5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
@@ -109,7 +259,12 @@ export function ProjectsPage() {
         </div>
         <div className="flex flex-wrap gap-2.5">
           {categories.map((category) => (
-            <button key={category} type="button" onClick={() => setActiveCategory(category)} className={`inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm transition focus:outline-none focus:ring-2 focus:ring-white/10 ${activeCategory === category ? 'border-white bg-white text-black' : 'border-white/10 bg-white/5 text-neutral-400 hover:text-white'}`}>
+            <button
+              key={category}
+              type="button"
+              onClick={() => setActiveCategory(category)}
+              className={`inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm transition focus:outline-none focus:ring-2 focus:ring-white/10 ${activeCategory === category ? 'border-white bg-white text-black' : 'border-white/10 bg-white/5 text-neutral-400 hover:text-white'}`}
+            >
               <CategoryIcon category={category} />
               <span>{category}</span>
             </button>
@@ -137,7 +292,9 @@ export function AboutPage() {
             <h3 className="text-lg font-semibold text-white">{skill.title}</h3>
             <div className="mt-5 flex flex-wrap gap-2.5">
               {skill.items.map((item) => (
-                <span key={item} className="rounded-full border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-neutral-300">{item}</span>
+                <span key={item} className="rounded-full border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-neutral-300">
+                  {item}
+                </span>
               ))}
             </div>
           </article>
@@ -182,20 +339,11 @@ function SectionHeading({ title, description }: { title: string; description: st
   );
 }
 
-function InfoCard({ label, value, href }: { label: string; value: string; href?: string }) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-      <div className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-neutral-300">{label}</div>
-      {href ? <a href={href} className="break-words text-sm text-neutral-300 hover:text-white">{value}</a> : <div className="break-words text-sm text-neutral-300">{value}</div>}
-    </div>
-  );
-}
-
-function Chip({ children }: { children: React.ReactNode }) {
+function Chip({ children }: { children: ReactNode }) {
   return <span className="rounded-full border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-neutral-300">{children}</span>;
 }
 
-function ActionLink({ href, icon, label, variant }: { href: string; icon: React.ReactNode; label: string; variant: 'primary' | 'secondary' }) {
+function ActionLink({ href, icon, label, variant }: { href: string; icon: ReactNode; label: string; variant: 'primary' | 'secondary' }) {
   const base = 'inline-flex items-center gap-2 rounded-2xl px-5 py-3.5 font-medium shadow-soft transition';
   const styles =
     variant === 'primary'
@@ -210,7 +358,7 @@ function ActionLink({ href, icon, label, variant }: { href: string; icon: React.
   );
 }
 
-function SocialIconLink({ href, icon, label, external }: { href: string; icon: React.ReactNode; label: string; external?: boolean }) {
+function SocialIconLink({ href, icon, label, external }: { href: string; icon: ReactNode; label: string; external?: boolean }) {
   return (
     <a
       href={href}
@@ -268,7 +416,7 @@ function GridIcon() {
 }
 
 function CategoryIcon({ category }: { category: Project['category'] | 'All' }) {
-  const icons: Record<string, React.ReactNode> = {
+  const icons: Record<string, ReactNode> = {
     All: <DotsIcon />,
     Web: <GlobeIcon />,
     Database: <DatabaseIcon />,
@@ -338,7 +486,9 @@ function SparkIcon() {
 function ProjectCard({ project }: { project: Project }) {
   return (
     <article className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-neutral-950/80 shadow-soft transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg">
-      {project.image ? (
+      {Array.isArray(project.image) ? (
+        <ImageCarousel images={project.image} />
+      ) : project.image ? (
         <img src={project.image} alt={`${project.title} preview`} className="aspect-[1.65] w-full object-cover" />
       ) : (
         <div className="grid aspect-[1.65] place-items-center border-b border-white/10 bg-gradient-to-br from-white/5 to-black px-6 text-left">
@@ -360,7 +510,9 @@ function ProjectCard({ project }: { project: Project }) {
         <p className="text-sm leading-7 text-neutral-400">{project.summary}</p>
         <div className="flex flex-wrap gap-2">
           {project.tech.map((item) => (
-            <span key={item} className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white">{item}</span>
+            <span key={item} className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white">
+              {item}
+            </span>
           ))}
         </div>
         <div className="text-sm text-neutral-400">
@@ -368,6 +520,30 @@ function ProjectCard({ project }: { project: Project }) {
         </div>
       </div>
     </article>
+  );
+}
+
+function ImageCarousel({ images, interval = 3500 }: { images: string[]; interval?: number }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    if (!images || images.length <= 1) return;
+    const timer = setInterval(() => setActiveIndex((current) => (current + 1) % images.length), interval);
+    return () => clearInterval(timer);
+  }, [images, interval]);
+
+  return (
+    <div className="relative aspect-[1.65] w-full overflow-hidden">
+      {images.map((src, slideIndex) => (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={src}
+          src={src}
+          alt=""
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${slideIndex === activeIndex ? 'opacity-100' : 'opacity-0'}`}
+        />
+      ))}
+    </div>
   );
 }
 
