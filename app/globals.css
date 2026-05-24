@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html[data-theme='midnight'] {
+  color-scheme: dark;
+}
+
+html[data-theme='ink'] {
+  color-scheme: light;
+}
+
+html[data-theme='midnight'] .bg-neutral-950\/80,
+html[data-theme='midnight'] .bg-neutral-950\/90,
+html[data-theme='midnight'] .bg-neutral-900\/80,
+html[data-theme='midnight'] .bg-black\/80,
+html[data-theme='midnight'] .bg-slate-950\/80,
+html[data-theme='midnight'] .bg-slate-950\/90,
+html[data-theme='midnight'] .bg-slate-900\/80,
+html[data-theme='midnight'] .bg-slate-900\/70 {
+  background-color: rgba(6, 14, 28, 0.88) !important;
+}
+
+html[data-theme='midnight'] .bg-white\/5 {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+html[data-theme='midnight'] .bg-white\/10 {
+  background-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+html[data-theme='midnight'] .bg-gradient-to-br.from-white\/5.to-black,
+html[data-theme='midnight'] .bg-gradient-to-br.from-white\/10.to-black,
+html[data-theme='midnight'] .bg-gradient-to-br.from-slate-900\/40.to-slate-950 {
+  background-image: linear-gradient(135deg, rgba(23, 37, 84, 0.4), rgba(2, 6, 23, 0.98)) !important;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #07101f 0%, #030712 58%, #02050c 100%);
+  color: #edf3ff;
+  font-family: Inter, Segoe UI, Arial, sans-serif;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 80%);
+  opacity: 0.45;
+}
+
+html[data-theme='ink'] body {
+  background: linear-gradient(180deg, #f7f7f7 0%, #ececec 58%, #dcdcdc 100%);
+  color: #111111;
+}
+
+html[data-theme='ink'] body::before {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+  opacity: 0.28;
+}
+
+html[data-theme='ink'] .bg-neutral-950\/80,
+html[data-theme='ink'] .bg-neutral-950\/90,
+html[data-theme='ink'] .bg-neutral-900\/80,
+html[data-theme='ink'] .bg-black\/80 {
+  background-color: rgba(255, 255, 255, 0.88) !important;
+}
+
+html[data-theme='ink'] .bg-white\/5 {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+html[data-theme='ink'] .bg-white\/10 {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+html[data-theme='ink'] .border-white\/10,
+html[data-theme='ink'] .border-white\/15 {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+html[data-theme='ink'] .text-white {
+  color: #111111 !important;
+}
+
+html[data-theme='ink'] .text-neutral-200 {
+  color: #1f1f1f !important;
+}
+
+html[data-theme='ink'] .text-neutral-300 {
+  color: #333333 !important;
+}
+
+html[data-theme='ink'] .text-neutral-400 {
+  color: #525252 !important;
+}
+
+html[data-theme='ink'] .text-neutral-500 {
+  color: #737373 !important;
+}
+
+html[data-theme='ink'] .bg-gradient-to-br.from-white\/5.to-black,
+html[data-theme='ink'] .bg-gradient-to-br.from-white\/10.to-black {
+  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.08)) !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: rgba(255, 255, 255, 0.18);
+  color: #000000;
+}
+
+/* Smooth theme and interaction transitions */
+*, *::before, *::after {
+  transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease, box-shadow 200ms ease, transform 200ms ease;
+}
+
+/* Accessible focus-visible treatment */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.10);
+  border-radius: 8px;
+}
