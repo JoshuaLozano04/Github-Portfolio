@@ -76,12 +76,12 @@ export const portfolioCopy: LocaleCopy = {
     aboutTitle: 'About',
     aboutDescription: 'Skills and programming languages grouped into a simple, readable layout.',
     contactsTitle: 'Contacts',
-    contactsDescription: 'A minimal contact form with an anti-bot step. Replace the placeholder with a real reCAPTCHA site key when you connect a backend.',
+    contactsDescription: '',
     submitButton: 'Send Message',
     contactSideTitle: 'Direct Contact',
     contactSideCopy: 'Reach me directly for project discussions, internships, or collaboration opportunities.',
-    contactNote: 'This page is a complete visual reference and can be moved into Next.js later with the same content map and sections.',
-    footer: 'Built from the CV reference and workspace assets.'
+    contactNote: '',
+    footer: ''
   },
   featured: 'Featured Projects',
   filters: ['All', 'Web', 'Database', 'Desktop', 'Game', 'AI'],
@@ -103,7 +103,7 @@ export const portfolioCopy: LocaleCopy = {
   ]
 };
 
-// Added CarbonSense project (AI-integrated MERN web system)
+// Added CarbonSense project (AI-integrated MERN web system)      
 portfolioCopy.projects.push({
   title: 'CarbonSense',
   year: '2025',

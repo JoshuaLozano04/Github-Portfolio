@@ -318,10 +318,11 @@ export function ContactsPage() {
           <h3 className="text-xl font-semibold text-white">{copy.hero.contactSideTitle}</h3>
           <p className="mt-4 text-sm leading-7 text-neutral-400">{copy.hero.contactSideCopy}</p>
           <div className="mt-6 flex flex-wrap gap-2.5">
-            <Chip>melchizedek.lozano@gmail.com</Chip>
-            <Chip>LinkedIn</Chip>
-            <Chip>GitHub</Chip>
-            <Chip>reCAPTCHA ready</Chip>
+              {/* <Chip>melchizedek.lozano@gmail.com</Chip>
+              <Chip>LinkedIn</Chip>
+              <Chip>GitHub</Chip>
+              <Chip>reCAPTCHA ready</Chip>
+              */}
           </div>
           <p className="mt-6 text-sm leading-7 text-neutral-400">{copy.hero.contactNote}</p>
         </article>
