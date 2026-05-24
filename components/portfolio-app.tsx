@@ -186,7 +186,13 @@ function ProjectCard({ project }: { project: Project }) {
   return (
     <article className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-neutral-950/80 shadow-soft">
       {project.image ? (
-        <img src={project.image} alt={`${project.title} preview`} className="aspect-[1.65] w-full object-cover" />
+        <img
+          src={Array.isArray(project.image)
+            ? project.image[0]
+            : project.image}
+          alt={`${project.title} preview`}
+          className="aspect-[1.65] w-full object-cover"
+        />
       ) : (
         <div className="grid aspect-[1.65] place-items-center border-b border-white/10 bg-gradient-to-br from-white/5 to-black px-6 text-left">
           <div className="grid gap-3">
