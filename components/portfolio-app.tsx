@@ -210,7 +210,9 @@ function ProjectCard({ project }: { project: Project }) {
           <span>•</span>
           <span>{project.category}</span>
         </div>
-        <p className="text-sm leading-7 text-neutral-400">{project.summary}</p>
+            <p className="line-clamp-1 text-sm leading-8 text-neutral-400">
+              {project.summary}
+            </p>
         <div className="flex flex-wrap gap-2">
           {project.tech.map((item) => (
             <span key={item} className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white">{item}</span>

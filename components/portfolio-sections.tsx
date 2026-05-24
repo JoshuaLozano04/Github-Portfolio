@@ -197,7 +197,7 @@ function HomeSkillsPreview() {
           />
           <div className="relative flex items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-neutral-500">Selected stack</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-neutral-500"></p>
               <h3 className="mt-2 text-xl font-semibold text-white">{group.title}</h3>
             </div>
             <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-neutral-300">{group.items.length} items</span>
