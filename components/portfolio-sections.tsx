@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { BrainCircuit, ChevronLeft, ChevronRight, Database, GraduationCap, MonitorSmartphone, ServerCog, Sparkles } from 'lucide-react';
+import { BrainCircuit, ChevronLeft, ChevronRight, GraduationCap, Sparkles } from 'lucide-react';
 import { FaAws, FaJava } from 'react-icons/fa6';
 import { FaGithub, FaLinkedinIn } from 'react-icons/fa6';
 import { HiArrowRight, HiDevicePhoneMobile, HiOutlineComputerDesktop, HiOutlineEllipsisHorizontal, HiOutlineEnvelope, HiOutlineGlobeAlt, HiOutlineSquares2X2, HiOutlineSparkles } from 'react-icons/hi2';
@@ -120,6 +120,26 @@ const homeSkillGroups: HomeSkillGroup[] = [
 
 function getSkillIcon(iconKey: SkillIconKey) {
   return skillIcons[iconKey];
+}
+
+function getAboutSkillCardLayout(title: string) {
+  if (title === 'Programming') {
+    return 'col-span-12 lg:col-span-8';
+  }
+
+  if (title === 'Frontend') {
+    return 'col-span-12 sm:col-span-6 lg:col-span-4';
+  }
+
+  if (title === 'Backend') {
+    return 'col-span-12 sm:col-span-6 lg:col-span-6';
+  }
+
+  if (title === 'Databases') {
+    return 'col-span-12 sm:col-span-6 lg:col-span-6';
+  }
+
+  return 'col-span-12 lg:col-span-12';
 }
 
 export function HomePage() {
@@ -301,9 +321,6 @@ export function ProjectsPage() {
 export function AboutPage() {
   const { copy } = usePortfolio();
 
-  const frontendSkills = copy.skills.find((skill) => skill.title === 'Frontend and Interface');
-  const backendSkills = copy.skills.find((skill) => skill.title === 'Backend and Systems');
-  const databaseSkills = copy.skills.find((skill) => skill.title === 'Database and Cloud');
   const coreSkills = copy.skills.find((skill) => skill.title === 'Core Work Skills');
   const education = copy.skills.find((skill) => skill.title === 'Education');
 
@@ -351,36 +368,50 @@ export function AboutPage() {
       </motion.section>
 
       <motion.section data-scroll-section="true" className="grid gap-6" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={sectionReveal}>
-        <SectionHeading title="Programming Languages and Tools" description="The same core languages and tools highlighted on the home tab, organized for easier scanning." />
-        <motion.div className="grid gap-5 xl:grid-cols-2" variants={staggerReveal}>
+        <SectionHeading title="Programming Languages and Tools" description="A curated stack arranged with intentional hierarchy for quick scanning and stronger visual rhythm." />
+
+        <motion.div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-12 lg:gap-5" variants={staggerReveal}>
           {homeSkillGroups.map((group) => (
-            <motion.article key={group.title} className="group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.3)] backdrop-blur-xl transition duration-300 hover:border-white/20 hover:shadow-[0_35px_100px_rgba(0,0,0,0.45)] md:p-7" variants={itemReveal} whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}>
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.06),transparent_32%)] opacity-60 transition duration-300 group-hover:opacity-100" />
+            <motion.article
+              key={group.title}
+              className={`group relative overflow-hidden rounded-[1.5rem] border border-white/[0.06] bg-white/[0.03] p-5 shadow-[0_20px_55px_rgba(0,0,0,0.32)] backdrop-blur-xl transition duration-300 hover:border-white/[0.12] hover:shadow-[0_26px_65px_rgba(0,0,0,0.42)] sm:p-6 ${getAboutSkillCardLayout(group.title)}`}
+              variants={itemReveal}
+              whileHover={{ y: -3, transition: { duration: 0.24, ease: premiumEase } }}
+              style={{ willChange: 'transform' }}
+            >
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.06),transparent_36%)] opacity-60 transition duration-300 group-hover:opacity-100" />
+
               <div className="relative flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-neutral-500">{group.title}</p>
-                  <p className="mt-2 text-sm leading-7 text-neutral-400">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">{group.title}</p>
+                  <p className="mt-2 max-w-xl text-sm leading-6 text-neutral-400">
                     {group.title === 'Programming'
-                      ? 'Primary languages I use to build application logic, services, and interactive experiences.'
+                      ? 'Primary languages for product logic, integrations, and scalable delivery.'
                       : group.title === 'Frontend'
-                        ? 'Client-side building blocks for responsive interfaces and cross-platform presentation.'
+                        ? 'UI foundations for responsive, polished, and accessible interfaces.'
                         : group.title === 'Backend'
-                          ? 'Server-side frameworks and runtime tools for APIs, workflows, and application logic.'
+                          ? 'Services and application runtime tools for robust API workflows.'
                           : group.title === 'Databases'
-                            ? 'Storage systems and data layers used to keep applications structured and reliable.'
-                            : 'Supporting tools I use for cloud deployment, version control, and design collaboration.'}
+                            ? 'Data systems used for reliable storage, querying, and performance.'
+                            : 'Deployment and collaboration tools used across build and release cycles.'}
                   </p>
                 </div>
+
+                <span className="shrink-0 rounded-full border border-white/[0.1] bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-neutral-500">
+                  {group.items.length}
+                </span>
               </div>
-              <div className="relative mt-5 flex flex-wrap gap-2.5">
+
+              <div className="relative mt-4 flex flex-wrap gap-1.5">
                 {group.items.map((item) => {
                   const Icon = getSkillIcon(item.iconKey);
 
                   return (
                     <motion.span
                       key={item.label}
-                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-neutral-300"
-                      whileHover={{ y: -1, transition: { duration: 0.2, ease: premiumEase } }}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-white/[0.025] px-2.5 py-1 text-[11px] font-medium text-neutral-300 transition-colors duration-200 hover:border-white/[0.16] hover:bg-white/[0.055] hover:text-white"
+                      whileHover={{ y: -1, transition: { duration: 0.18, ease: premiumEase } }}
+                      style={{ willChange: 'transform' }}
                     >
                       <Icon aria-hidden="true" className="h-3.5 w-3.5 text-neutral-400" />
                       {item.label}
@@ -393,36 +424,40 @@ export function AboutPage() {
         </motion.div>
       </motion.section>
 
-      <motion.section data-scroll-section="true" className="grid gap-6 lg:grid-cols-2 lg:items-start" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={staggerReveal}>
-        <AboutPanel title="Frontend" description="Interfaces, interaction polish, and responsive design." icon={<MonitorSmartphone className="h-4 w-4" aria-hidden="true" />}>
-          {frontendSkills?.items.map((item) => (
-            <Tag key={item}>{item}</Tag>
-          ))}
-        </AboutPanel>
+      <motion.section data-scroll-section="true" className="grid gap-6" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={sectionReveal}>
+        <motion.article
+          className="group relative overflow-hidden rounded-[1.5rem] border border-white/[0.06] bg-white/[0.03] p-5 shadow-[0_20px_55px_rgba(0,0,0,0.32)] backdrop-blur-xl transition duration-300 hover:border-white/[0.12] hover:shadow-[0_26px_65px_rgba(0,0,0,0.42)] sm:p-6"
+          variants={itemReveal}
+          whileHover={{ y: -3, transition: { duration: 0.24, ease: premiumEase } }}
+          style={{ willChange: 'transform' }}
+        >
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.06),transparent_36%)] opacity-60 transition duration-300 group-hover:opacity-100" />
+          <div className="relative flex items-start justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <SectionIcon icon={<BrainCircuit className="h-4 w-4" aria-hidden="true" />} />
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">Core Skills</p>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-neutral-400">Practical strengths that support delivery, collaboration, and dependable product quality.</p>
+              </div>
+            </div>
+            <span className="shrink-0 rounded-full border border-white/[0.1] bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-neutral-500">
+              {coreSkills?.items.length ?? 0}
+            </span>
+          </div>
 
-        <AboutPanel title="Backend" description="APIs, business logic, authentication, and system reliability." icon={<ServerCog className="h-4 w-4" aria-hidden="true" />}>
-          {backendSkills?.items.map((item) => (
-            <Tag key={item}>{item}</Tag>
-          ))}
-        </AboutPanel>
-      </motion.section>
-
-      <motion.section data-scroll-section="true" className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-start" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={staggerReveal}>
-        <AboutPanel title="Database" description="Data modeling, persistence, and cloud-aware storage design." icon={<Database className="h-4 w-4" aria-hidden="true" />}>
-          {databaseSkills?.items.map((item) => (
-            <Tag key={item}>{item}</Tag>
-          ))}
-        </AboutPanel>
-
-        <AboutPanel title="Skills" description="Core strengths that support shipping dependable products." icon={<BrainCircuit className="h-4 w-4" aria-hidden="true" />}>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="relative mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {coreSkills?.items.map((item) => (
-              <motion.div key={item} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-neutral-300" variants={itemReveal} whileHover={{ y: -2, transition: { duration: 0.2, ease: premiumEase } }}>
+              <motion.span
+                key={item}
+                className="inline-flex w-fit items-center rounded-full border border-white/[0.1] bg-white/[0.025] px-2.5 py-1 text-[11px] font-medium text-neutral-300 transition-colors duration-200 hover:border-white/[0.16] hover:bg-white/[0.055] hover:text-white"
+                whileHover={{ y: -1, transition: { duration: 0.18, ease: premiumEase } }}
+                style={{ willChange: 'transform' }}
+              >
                 {item}
-              </motion.div>
+              </motion.span>
             ))}
           </div>
-        </AboutPanel>
+        </motion.article>
       </motion.section>
 
       <motion.section data-scroll-section="true" className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={staggerReveal}>
@@ -458,32 +493,8 @@ export function AboutPage() {
   );
 }
 
-function AboutPanel({ title, description, icon, children }: { title: string; description: string; icon: ReactNode; children: ReactNode }) {
-  return (
-    <motion.article className="group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.3)] backdrop-blur-xl transition duration-300 hover:border-white/20 hover:shadow-[0_35px_100px_rgba(0,0,0,0.45)] md:p-7" variants={itemReveal} whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}>
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.06),transparent_32%)] opacity-60 transition duration-300 group-hover:opacity-100" />
-      <div className="relative flex items-start gap-3">
-        <SectionIcon icon={icon} />
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-neutral-500">{title}</p>
-          <p className="mt-2 max-w-xl text-sm leading-7 text-neutral-400">{description}</p>
-        </div>
-      </div>
-      <div className="relative mt-5 flex flex-wrap gap-2.5">{children}</div>
-    </motion.article>
-  );
-}
-
 function SectionIcon({ icon }: { icon: ReactNode }) {
   return <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-neutral-200">{icon}</span>;
-}
-
-function Tag({ children }: { children: ReactNode }) {
-  return (
-    <motion.span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium tracking-[0.01em] text-neutral-300" whileHover={{ y: -1, transition: { duration: 0.2, ease: premiumEase } }}>
-      {children}
-    </motion.span>
-  );
 }
 
 export function ContactsPage() {
