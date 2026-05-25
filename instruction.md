@@ -91,7 +91,7 @@ Home should stay shorter than the other pages and act as the landing summary.
 
 ## Content Reference From CV
 
-- Name: Joshua S. Lozano
+- Name: Melchizedek Joshua Lozano
 - Title: Full Stack Developer
 - Education: PHINMA University of Pangasinan, BSIT
 - Skills and tools: Java, Python, HTML & CSS, PHP, MySQL, Laravel, Kotlin, Flutter, Node.js, TypeScript, PostgreSQL, MongoDB, AWS

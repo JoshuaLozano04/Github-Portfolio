@@ -61,7 +61,7 @@ export const portfolioCopy: LocaleCopy = {
   theme: { night: 'Night mode', dark: 'Dark mode' },
   hero: {
     eyebrow: 'Professional Portfolio',
-    title: 'Joshua S. Lozano',
+    title: 'Melchizedek Joshua Lozano',
     summary: 'A BSIT student at PHINMA University of Pangasinan, specializing in System Development, with strong proficiency in full-stack system development and database-driven systems. Passionate about building user-focused solutions and eager to apply technical skills to real-world projects through internships or entrylevel roles.',
     location: 'Pangasinan, Philippines',
     contactTitle: 'Contact Info',
@@ -72,7 +72,7 @@ export const portfolioCopy: LocaleCopy = {
     toolsTitle: 'Programming Languages and Tools',
     toolsDescription: '',
     projectsTitle: 'Projects',
-    projectsDescription: 'Search and filter all projects from the CV. Cards update live as you type.',
+    projectsDescription: '',
     aboutTitle: 'About',
     aboutDescription: '',
     contactsTitle: 'Contacts',

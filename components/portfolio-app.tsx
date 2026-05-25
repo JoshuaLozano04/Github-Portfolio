@@ -34,7 +34,7 @@ export function PortfolioApp({ copy }: PortfolioAppProps) {
           <a href="#home" className="flex items-center gap-3">
             <div className="grid h-11 w-11 place-items-center rounded-2xl border border-white/15 bg-gradient-to-br from-white/10 to-black text-white shadow-soft">JS</div>
             <div>
-              <div className="text-sm font-semibold tracking-[0.02em]">Joshua S. Lozano</div>
+              <div className="max-w-[170px] text-xs font-semibold leading-tight tracking-[0.015em] sm:max-w-none sm:text-sm">Melchizedek Joshua Lozano</div>
               <div className="text-sm text-neutral-400">Full Stack Developer</div>
             </div>
           </a>
@@ -58,7 +58,7 @@ export function PortfolioApp({ copy }: PortfolioAppProps) {
         <section id="home" className="grid gap-6 lg:grid-cols-[1.3fr_0.9fr]">
           <article className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-neutral-950/80 p-8 shadow-soft">
             <span className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white">{copy.hero.eyebrow}</span>
-            <h1 className="mt-4 max-w-[9ch] text-5xl font-semibold tracking-[-0.04em] text-white md:text-7xl">{copy.hero.title}</h1>
+            <h1 className="mt-4 max-w-[18ch] text-4xl font-semibold leading-[1.05] tracking-[-0.035em] text-white sm:text-5xl md:text-6xl lg:text-7xl">{copy.hero.title}</h1>
             <p className="mt-4 max-w-3xl text-base leading-8 text-neutral-300 md:text-lg">{copy.hero.summary}</p>
 
             <div className="mt-6 grid gap-3 md:grid-cols-3">
@@ -74,9 +74,9 @@ export function PortfolioApp({ copy }: PortfolioAppProps) {
           </article>
 
           <aside className="overflow-hidden rounded-[2rem] border border-white/10 bg-neutral-950/80 p-4 shadow-soft">
-            <img src="/images/profile.jpg" alt="Portrait of Joshua S. Lozano" className="aspect-[0.92] w-full rounded-[1.5rem] object-cover" />
+            <img src="/images/profile.jpg" alt="Portrait of Melchizedek Joshua Lozano" className="aspect-[0.92] w-full rounded-[1.5rem] object-cover" />
             <div className="grid gap-1 p-3 text-center">
-              <div className="text-lg font-semibold text-white">Joshua S. Lozano</div>
+              <div className="mx-auto max-w-[22ch] text-base font-semibold leading-tight text-white xl:text-lg">Melchizedek Joshua Lozano</div>
               <div className="text-sm text-neutral-400">Full Stack Developer</div>
             </div>
           </aside>

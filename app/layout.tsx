@@ -6,8 +6,8 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { THEME_INIT_SCRIPT } from '@/lib/theme';
 
 export const metadata: Metadata = {
-  title: 'Joshua S. Lozano | Portfolio',
-  description: 'Professional portfolio for Joshua S. Lozano built with Next.js and Tailwind CSS.'
+  title: 'Melchizedek Joshua Lozano | Portfolio',
+  description: 'Professional portfolio for Melchizedek Joshua Lozano built with Next.js and Tailwind CSS.'
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

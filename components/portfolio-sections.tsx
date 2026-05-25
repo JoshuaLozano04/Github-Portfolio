@@ -133,7 +133,7 @@ export function HomePage() {
           <div className="grid items-start gap-8 lg:grid-cols-[1fr_320px]">
             <motion.div variants={itemReveal}>
               <span className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white">{copy.hero.eyebrow}</span>
-              <h1 className="mt-4 max-w-[12ch] text-5xl font-semibold tracking-[-0.04em] text-white md:text-7xl">{copy.hero.title}</h1>
+              <h1 className="mt-4 max-w-[18ch] text-4xl font-semibold leading-[1.05] tracking-[-0.035em] text-white sm:text-5xl md:text-6xl lg:text-7xl">{copy.hero.title}</h1>
               <p className="mt-5 max-w-3xl text-base leading-8 text-neutral-300 md:text-lg">{copy.hero.summary}</p>
               <p className="mt-5 text-sm text-neutral-400">
                 Based in <span className="text-neutral-100">{copy.hero.location}</span>
@@ -152,9 +152,9 @@ export function HomePage() {
             </motion.div>
 
             <motion.div className="hidden lg:block" variants={itemReveal}>
-              <img src="/images/profile.jpg" alt="Portrait of Joshua S. Lozano" className="aspect-[0.92] w-full rounded-[1.25rem] object-cover" />
+              <img src="/images/profile.jpg" alt="Portrait of Melchizedek Joshua Lozano" className="aspect-[0.92] w-full rounded-[1.25rem] object-cover" />
               <div className="mt-4 text-center">
-                <div className="text-lg font-semibold text-white">Joshua S. Lozano</div>
+                <div className="mx-auto max-w-[22ch] text-base font-semibold leading-tight text-white xl:text-lg">Melchizedek Joshua Lozano</div>
                 <div className="text-sm text-neutral-400">Full Stack Developer</div>
               </div>
             </motion.div>

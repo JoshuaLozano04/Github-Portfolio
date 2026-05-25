@@ -152,7 +152,7 @@ function PortfolioHeader({ pathname, isScrolled }: { pathname: string; isScrolle
         <a href="/" className="flex items-center gap-3">
           <div className="grid h-11 w-11 place-items-center rounded-2xl border border-white/15 bg-gradient-to-br from-white/10 to-black text-white shadow-soft">JS</div>
           <div>
-            <div className="text-sm font-semibold tracking-[0.02em]">Joshua S. Lozano</div>
+            <div className="max-w-[170px] text-xs font-semibold leading-tight tracking-[0.015em] sm:max-w-none sm:text-sm">Melchizedek Joshua Lozano</div>
             <div className="text-sm text-neutral-400">Full Stack Developer</div>
           </div>
         </a>
