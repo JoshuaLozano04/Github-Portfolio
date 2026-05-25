@@ -41,6 +41,22 @@ html[data-theme='midnight'] .bg-gradient-to-br.from-slate-900\/40.to-slate-950 {
 
 html {
   scroll-behavior: smooth;
+  transition: background-color 240ms ease, color 240ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 body {
@@ -49,6 +65,7 @@ body {
   background: linear-gradient(180deg, #07101f 0%, #030712 58%, #02050c 100%);
   color: #edf3ff;
   font-family: Inter, Segoe UI, Arial, sans-serif;
+  transition: background-color 240ms ease, color 240ms ease;
 }
 
 body::before {
@@ -131,9 +148,9 @@ a {
   color: #000000;
 }
 
-/* Smooth theme and interaction transitions */
+/* Smooth theme transitions */
 *, *::before, *::after {
-  transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease, box-shadow 200ms ease, transform 200ms ease;
+  transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease, box-shadow 200ms ease;
 }
 
 /* Accessible focus-visible treatment */

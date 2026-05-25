@@ -1,23 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { LocaleCopy, Project } from "@/data/portfolio";
+import { useTheme } from '@/components/theme-provider';
 
 type PortfolioAppProps = {
   copy: LocaleCopy;
 };
 
-const categories: Array<Project['category'] | 'All'> = ['All', 'Web', 'Database', 'Desktop', 'Game', 'AI'];
+const categories: Array<Project['category'] | 'All'> = ['All', 'Web', 'Mobile', 'Desktop', 'Game', 'AI'];
 
 export function PortfolioApp({ copy }: PortfolioAppProps) {
-  const [theme, setTheme] = useState<'midnight' | 'ink'>('midnight');
+  const { theme, toggleTheme } = useTheme();
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<'All' | Project['category']>('All');
-
-  useEffect(() => {
-    document.documentElement.lang = 'en';
-    document.documentElement.dataset.theme = theme;
-  }, [theme]);
 
   const filteredProjects = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -51,7 +47,7 @@ export function PortfolioApp({ copy }: PortfolioAppProps) {
           </nav>
 
           <div className="flex items-center gap-3">
-            <button type="button" onClick={() => setTheme((current) => (current === 'midnight' ? 'ink' : 'midnight'))} className="rounded-2xl border border-white/10 bg-neutral-900/80 px-4 py-2 text-sm text-white transition hover:border-white/20">
+            <button type="button" onClick={toggleTheme} className="rounded-2xl border border-white/10 bg-neutral-900/80 px-4 py-2 text-sm text-white transition hover:border-white/20">
               {theme === 'midnight' ? copy.theme.night : copy.theme.dark}
             </button>
           </div>
@@ -191,7 +187,8 @@ function ProjectCard({ project }: { project: Project }) {
             ? project.image[0]
             : project.image}
           alt={`${project.title} preview`}
-          className="aspect-[1.65] w-full object-cover"
+          loading="lazy"
+          className="aspect-[1.65] w-full object-contain"
         />
       ) : (
         <div className="grid aspect-[1.65] place-items-center border-b border-white/10 bg-gradient-to-br from-white/5 to-black px-6 text-left">

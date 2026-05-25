@@ -1,7 +1,13 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
+import { usePathname } from 'next/navigation';
+import { HiOutlineEnvelope, HiOutlineHome, HiOutlineInformationCircle, HiOutlineMoon, HiOutlineSquares2X2, HiOutlineSun } from "react-icons/hi2";
+import { ChevronUp } from 'lucide-react';
 import type { LocaleCopy } from "@/data/portfolio";
+import { useTheme } from '@/components/theme-provider';
+import { navUnderline, pageFadeUp, shellHeaderReveal } from '@/lib/motion';
 
 type PortfolioShellProps = {
   copy: LocaleCopy;
@@ -17,22 +23,111 @@ type PortfolioContextValue = {
 const PortfolioContext = createContext<PortfolioContextValue | null>(null);
 
 export function PortfolioShell({ copy, children }: PortfolioShellProps) {
-  const [theme, setTheme] = useState<"midnight" | "ink">("midnight");
+  const { theme, toggleTheme, mounted } = useTheme();
+  const pathname = usePathname();
+  const [scrollSections, setScrollSections] = useState<HTMLElement[]>([]);
+  const [activeSectionIndex, setActiveSectionIndex] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isNearBottom, setIsNearBottom] = useState(false);
 
   useEffect(() => {
     document.documentElement.lang = "en";
-    document.documentElement.dataset.theme = theme;
-  }, [theme]);
+  }, []);
 
-  const value = useMemo<PortfolioContextValue>(() => ({ theme, toggleTheme: () => setTheme((c) => (c === "midnight" ? "ink" : "midnight")), copy }), [copy, theme]);
+  useEffect(() => {
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-scroll-section="true"]'));
+    setScrollSections(sections);
+
+    const updateActiveSection = () => {
+      setIsScrolled(window.scrollY > 8);
+      const bottomThreshold = 280;
+      const nearBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - bottomThreshold;
+      setIsNearBottom(nearBottom);
+
+      if (!sections.length) {
+        setActiveSectionIndex(0);
+        return;
+      }
+
+      const offset = 160;
+      let currentIndex = 0;
+
+      sections.forEach((section, index) => {
+        if (section.getBoundingClientRect().top <= offset) {
+          currentIndex = index;
+        }
+      });
+
+      setActiveSectionIndex(currentIndex);
+    };
+
+    let frameId = 0;
+
+    const handleScroll = () => {
+      cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(updateActiveSection);
+    };
+
+    updateActiveSection();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
+
+    return () => {
+      cancelAnimationFrame(frameId);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, [pathname]);
+
+  const value = useMemo<PortfolioContextValue>(() => ({ theme, toggleTheme, copy }), [copy, theme, toggleTheme]);
+
+  const showUpArrow = isNearBottom && activeSectionIndex > 0;
+
+  const scrollToSection = (targetIndex: number) => {
+    const target = scrollSections[targetIndex];
+    if (!target) {
+      return;
+    }
+
+    const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    target.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
+  };
 
   return (
-    <PortfolioContext.Provider value={value}>
-      <div className="relative z-10 min-h-screen">
-        <PortfolioHeader />
-        {children}
-      </div>
-    </PortfolioContext.Provider>
+    <MotionConfig reducedMotion="user">
+      <PortfolioContext.Provider value={value}>
+        <div className="relative min-h-screen overflow-x-hidden">
+          <AmbientBackdrop />
+          <motion.div className="relative z-10" initial="hidden" animate="visible" variants={pageFadeUp}>
+            <PortfolioHeader pathname={pathname} isScrolled={isScrolled} />
+            <motion.div key={pathname} initial="hidden" animate="visible" variants={pageFadeUp}>
+              {children}
+            </motion.div>
+          </motion.div>
+          <AnimatePresence initial={false}>
+            {showUpArrow && (
+              <motion.aside
+                key="scroll-navigation"
+                className="fixed right-3 bottom-4 z-40 flex flex-col gap-2 sm:right-5 sm:bottom-5"
+                initial={{ opacity: 0, x: 12 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 12 }}
+                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <ScrollArrowButton
+                  label="Scroll to top of page"
+                  icon={<ChevronUp aria-hidden="true" className="h-4 w-4" />}
+                  onClick={() => {
+                    const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+                  }}
+                />
+              </motion.aside>
+            )}
+          </AnimatePresence>
+        </div>
+      </PortfolioContext.Provider>
+    </MotionConfig>
   );
 }
 
@@ -44,12 +139,16 @@ export function usePortfolio() {
   return context;
 }
 
-function PortfolioHeader() {
+function PortfolioHeader({ pathname, isScrolled }: { pathname: string; isScrolled: boolean }) {
   const { theme, toggleTheme, copy } = usePortfolio();
+  const { mounted } = useTheme();
 
   return (
-    <header className="sticky top-0 z-30 border-b border-white/10 bg-black/80 backdrop-blur-xl">
-      <div className="mx-auto flex w-[min(1200px,calc(100%-32px))] flex-wrap items-center justify-between gap-5 py-5">
+    <header
+      className={`sticky top-0 z-30 border-b backdrop-blur-xl ${isScrolled ? 'border-white/15 bg-black/88 shadow-[0_18px_50px_rgba(0,0,0,0.24)]' : 'border-white/10 bg-black/80'}`}
+      style={{ transform: isScrolled ? 'translate3d(0, 8px, 0) scale(0.992)' : 'translate3d(0, 0, 0) scale(1)' }}
+    >
+      <div className={`mx-auto flex w-[min(1200px,calc(100%-32px))] flex-wrap items-center justify-between gap-5 py-5 transition-[padding] duration-300 ${isScrolled ? 'py-4' : 'py-5'}`}>
         <a href="/" className="flex items-center gap-3">
           <div className="grid h-11 w-11 place-items-center rounded-2xl border border-white/15 bg-gradient-to-br from-white/10 to-black text-white shadow-soft">JS</div>
           <div>
@@ -59,81 +158,62 @@ function PortfolioHeader() {
         </a>
 
         <nav className="flex flex-wrap items-center justify-center gap-2 text-sm text-neutral-400">
-          <NavLink href="/" icon={<HomeIcon />} label={copy.nav.home} />
-          <NavLink href="/projects" icon={<GridIcon />} label={copy.nav.projects} />
-          <NavLink href="/about" icon={<InfoIcon />} label={copy.nav.about} />
-          <NavLink href="/contacts" icon={<MailIcon />} label={copy.nav.contacts} />
+          <NavLink href="/" active={pathname === '/'} icon={<HiOutlineHome />} label={copy.nav.home} />
+          <NavLink href="/projects" active={pathname.startsWith('/projects')} icon={<HiOutlineSquares2X2 />} label={copy.nav.projects} />
+          <NavLink href="/about" active={pathname.startsWith('/about')} icon={<HiOutlineInformationCircle />} label={copy.nav.about} />
+          <NavLink href="/contacts" active={pathname.startsWith('/contacts')} icon={<HiOutlineEnvelope />} label={copy.nav.contacts} />
         </nav>
 
         <div className="flex items-center gap-3">
-          <button type="button" onClick={toggleTheme} aria-label={theme === 'midnight' ? copy.theme.night : copy.theme.dark} title="Toggle theme" className="grid h-11 w-11 place-items-center rounded-2xl border border-white/10 bg-neutral-900/80 text-white transition hover:border-white/20">
-            {theme === 'midnight' ? <MoonIcon /> : <SunIcon />}
-          </button>
+          <motion.button type="button" onClick={toggleTheme} aria-label={theme === 'midnight' ? copy.theme.night : copy.theme.dark} title="Toggle theme" className="grid h-11 w-11 place-items-center rounded-2xl border border-white/10 bg-neutral-900/80 text-white transition hover:border-white/20" whileHover={{ y: -1, scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}>
+            {!mounted ? <HiOutlineMoon /> : theme === 'midnight' ? <HiOutlineMoon /> : <HiOutlineSun />}
+          </motion.button>
         </div>
       </div>
     </header>
   );
 }
 
-function NavLink({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
+function AmbientBackdrop() {
   return (
-    <a href={href} className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 transition hover:bg-white/10 hover:text-white">
-      <span className="text-white">{icon}</span>
+    <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+      <motion.div
+        className="absolute -left-24 top-[-8rem] h-[30rem] w-[30rem] rounded-full bg-cyan-400/10 blur-3xl"
+        animate={{ x: [0, 18, 0], y: [0, -10, 0], opacity: [0.16, 0.22, 0.16] }}
+        transition={{ duration: 28, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      <motion.div
+        className="absolute bottom-[-12rem] right-[-8rem] h-[34rem] w-[34rem] rounded-full bg-sky-500/8 blur-3xl"
+        animate={{ x: [0, -16, 0], y: [0, 14, 0], opacity: [0.12, 0.18, 0.12] }}
+        transition={{ duration: 32, repeat: Infinity, ease: 'easeInOut' }}
+      />
+    </div>
+  );
+}
+
+function NavLink({ href, icon, label, active }: { href: string; icon: React.ReactNode; label: string; active?: boolean }) {
+  return (
+    <motion.a href={href} className={`group relative inline-flex items-center gap-2 rounded-full px-5 py-2.5 transition ${active ? 'text-white' : 'hover:text-white'}`} whileHover={{ y: -1 }} whileTap={{ scale: 0.99 }} transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}>
+      <span className={active ? 'text-white' : 'text-neutral-400 group-hover:text-white'}>{icon}</span>
       <span>{label}</span>
-    </a>
+      <motion.span className="absolute inset-x-4 bottom-1 h-px origin-left bg-white/70" variants={navUnderline} initial="rest" animate={active ? 'hover' : 'rest'} whileHover="hover" />
+    </motion.a>
   );
 }
 
-function HomeIcon() {
+function ScrollArrowButton({ label, icon, onClick }: { label: string; icon: React.ReactNode; onClick: () => void }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <path d="M4 11.5 12 5l8 6.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M6.5 10.5V19h11V10.5" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function GridIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <path d="M5 5h6v6H5V5Zm8 0h6v6h-6V5ZM5 13h6v6H5v-6Zm8 0h6v6h-6v-6Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function InfoIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <path d="M12 17v-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M12 8.2h.01" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" />
-      <circle cx="12" cy="12" r="8.2" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  );
-}
-
-function MailIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <path d="M4.5 7.5h15v9h-15v-9Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-      <path d="m5.5 8.5 6.5 5 6.5-5" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function MoonIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <path d="M17.5 14.6A7.5 7.5 0 0 1 9.4 6.5a7.5 7.5 0 1 0 8.1 8.1Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function SunIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M12 2.8v2.4M12 18.8v2.4M4.8 12H2.4M21.6 12h-2.4M6.2 6.2 4.5 4.5M19.5 19.5l-1.7-1.7M17.8 6.2l1.7-1.7M4.5 19.5l1.7-1.7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
+    <motion.button
+      type="button"
+      aria-label={label}
+      title={label}
+      onClick={onClick}
+      className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-white shadow-[0_8px_24px_rgba(0,0,0,0.24)] backdrop-blur-md transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/10 hover:shadow-[0_12px_30px_rgba(0,0,0,0.3)] sm:h-11 sm:w-11"
+      whileHover={{ y: -2, transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] } }}
+      whileTap={{ scale: 0.96 }}
+    >
+      {icon}
+    </motion.button>
   );
 }
 // Language icon removed — translation feature deprecated

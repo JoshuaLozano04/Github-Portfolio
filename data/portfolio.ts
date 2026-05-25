@@ -1,4 +1,4 @@
-export type ProjectCategory = 'AI' | 'Web' | 'Database' | 'Desktop' | 'Game';
+export type ProjectCategory = 'AI' | 'Web' | 'Mobile' | 'Desktop' | 'Game';
 
 export type Project = {
   title: string;
@@ -74,7 +74,7 @@ export const portfolioCopy: LocaleCopy = {
     projectsTitle: 'Projects',
     projectsDescription: 'Search and filter all projects from the CV. Cards update live as you type.',
     aboutTitle: 'About',
-    aboutDescription: 'Skills and programming languages grouped into a simple, readable layout.',
+    aboutDescription: '',
     contactsTitle: 'Contacts',
     contactsDescription: '',
     submitButton: 'Send Message',
@@ -84,7 +84,7 @@ export const portfolioCopy: LocaleCopy = {
     footer: ''
   },
   featured: 'Featured Projects',
-  filters: ['All', 'Web', 'Database', 'Desktop', 'Game', 'AI'],
+  filters: ['All', 'Web', 'Mobile', 'Desktop', 'Game', 'AI'],
   tools: ['Node.js', 'Python', 'Java', 'Kotlin', 'PHP', 'TypeScript', 'Django', 'Laravel', 'Flutter', 'PostgreSQL', 'MySQL', 'MongoDB', 'AWS', 'HTML', 'CSS', 'Ren\'Py'],
   skills: [
     { title: 'Frontend and Interface', items: ['HTML & CSS', 'JavaScript', 'TypeScript'] },
@@ -95,30 +95,61 @@ export const portfolioCopy: LocaleCopy = {
     { title: 'Education', items: ['PHINMA University of Pangasinan', 'Bachelor of Science in Information Technology', 'Major in Systems Development', '2023 - Present'] }
   ],
   projects: [
-    { title: 'My Crew Manager', year: '2025', category: 'AI', summary: 'An intelligent project management suite that powers plan, task, role, and backlog generation from uploaded proposals.', tech: ['Flutter', 'Django', 'TypeScript'], role: 'Backend Developer', image: ['/images/projects/mycrewmanager/mycrewmanagerdesktop.png','/images/projects/mycrewmanager/mycrewmanagerphone.png'] },
-    { title: 'Fitness Club Management System', year: '2024', category: 'Web', summary: 'A mobile and web-based gym management system for memberships, bookings, payments, authentication, and QR check-ins.', tech: ['Kotlin', 'PHP', 'JavaScript', 'MySQL', 'HTML', 'CSS'], role: 'Full Stack Developer', image: null },
-    { title: 'Library Management System', year: '2024', category: 'Database', summary: 'A digital library management project focused on borrowing, tracking, and user management workflows.', tech: ['Java', 'Laravel', 'MySQL'], role: 'Full Stack Developer', image: null },
-    { title: 'Flixrecos', year: '2023', category: 'Desktop', summary: 'A first-year project built with Java and CSS, with a lead developer role in the delivery of the system.', tech: ['Java', 'CSS', 'NetBeans'], role: 'Lead Developer / Full Stack Developer', image: null },
-    { title: 'Chambers of Forsaken', year: '2023', category: 'Game', summary: 'A point-and-click visual novel RPG developed with Python and Ren\'Py.', tech: ['Python', 'Ren\'Py'], role: 'Full Stack Developer', image: null }
+    { title: 'My Crew Manager', 
+      year: '2025', 
+      category: 'AI', 
+      summary: 'An intelligent project management suite that powers plan, task, role, and backlog generation from uploaded proposals.', 
+      tech: ['Flutter', 'Django', 'TypeScript'], 
+      role: 'Backend Developer', 
+      image: ['/images/projects/mycrewmanager/mycrewmanagerdesktop.png','/images/projects/mycrewmanager/mycrewmanagerphone.png'] },
+    { title: 'Fitness Club Management System', 
+      year: '2024', 
+      category: 'Web', 
+      summary: 'A mobile and web-based gym management system for memberships, bookings, payments, authentication, and QR check-ins.', 
+      tech: ['Kotlin', 'PHP', 'JavaScript', 'MySQL', 'HTML', 'CSS'], 
+      role: 'Full Stack Developer', 
+      image: [
+        '/images/projects/fitnessclubmanagementsystem/fitnessclubmanagementsystemmobile.png', 
+        '/images/projects/fitnessclubmanagementsystem/fitnessclubmanagementsystemweb.png', 
+        '/images/projects/fitnessclubmanagementsystem/fitnessclubmanagementsystemweb2.png'] },
+    { title: 'Library Management System', 
+      year: '2024', 
+      category: 'Mobile', 
+      summary: 'A digital library management project focused on borrowing, tracking, and user management workflows.', 
+      tech: ['Java', 'Laravel', 'MySQL'], 
+      role: 'Full Stack Developer', 
+      image: [
+        '/images/projects/upanglms/upanglms1.png',
+        '/images/projects/upanglms/upanglms2.png']},
+    { title: 'Flixrecos', 
+      year: '2023', 
+      category: 'Desktop', 
+      summary: 'A first-year project built with Java and CSS, with a lead developer role in the delivery of the system.', 
+      tech: ['Java', 'CSS', 'NetBeans'], 
+      role: 'Lead Developer / Full Stack Developer', 
+      image: null },
+    { title: 'Chambers of Forsaken', 
+      year: '2023', 
+      category: 'Game', 
+      summary: 'A point-and-click visual novel RPG developed with Python and Ren\'Py.', 
+      tech: ['Python', 'Ren\'Py'], 
+      role: 'Full Stack Developer', 
+      image: null },
+    { title: 'CarbonSense',
+    year: '2025',
+      category: 'AI',
+      summary: 'CarbonSense is an AI-integrated web-based system that allows users to track, analyze, and reduce their carbon footprint. Built using the MERN stack, it calculates emissions from daily activities such as transport, diet, and energy use, while providing AI-based recommendations to help users live more sustainably.',
+      tech: ['MongoDB', 'Express', 'React', 'Node.js', 'Python', 'TensorFlow'],
+      role: 'Backend Developer',
+      image: [
+        '/images/projects/carbonsense/carbonsense1.png',
+        '/images/projects/carbonsense/carbonsense2.png',
+        '/images/projects/carbonsense/carbonsense3.png',
+        '/images/projects/carbonsense/carbonsense4.png',
+        '/images/projects/carbonsense/carbonsense5.png'
+      ]}  
   ]
 };
-
-// Added CarbonSense project (AI-integrated MERN web system)      
-portfolioCopy.projects.push({
-  title: 'CarbonSense',
-  year: '2025',
-  category: 'AI',
-  summary: 'CarbonSense is an AI-integrated web-based system that allows users to track, analyze, and reduce their carbon footprint. Built using the MERN stack, it calculates emissions from daily activities such as transport, diet, and energy use, while providing AI-based recommendations to help users live more sustainably.',
-  tech: ['MongoDB', 'Express', 'React', 'Node.js', 'Python', 'TensorFlow'],
-  role: 'Backend Developer',
-  image: [
-    '/images/projects/carbonsense/carbonsense1.png',
-    '/images/projects/carbonsense/carbonsense2.png',
-    '/images/projects/carbonsense/carbonsense3.png',
-    '/images/projects/carbonsense/carbonsense4.png',
-    '/images/projects/carbonsense/carbonsense5.png'
-  ]
-});
 
 // Ensure projects are sorted by year (newest first)
 portfolioCopy.projects.sort((a, b) => {

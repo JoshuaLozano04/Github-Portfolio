@@ -2,7 +2,12 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import { FaAws } from 'react-icons/fa6';
+import { motion } from 'framer-motion';
+import { BrainCircuit, Database, GraduationCap, MonitorSmartphone, ServerCog, Sparkles } from 'lucide-react';
+import { FaAws, FaJava } from 'react-icons/fa6';
+import { FaGithub, FaLinkedinIn } from 'react-icons/fa6';
+import { HiArrowRight, HiDevicePhoneMobile, HiOutlineComputerDesktop, HiOutlineEllipsisHorizontal, HiOutlineEnvelope, HiOutlineGlobeAlt, HiOutlineSquares2X2, HiOutlineSparkles } from 'react-icons/hi2';
+import { IoGameControllerOutline } from 'react-icons/io5';
 import {
   SiCss,
   SiDjango,
@@ -17,7 +22,6 @@ import {
   SiMongodb,
   SiMysql,
   SiNodedotjs,
-  SiOpenjdk,
   SiPhp,
   SiPostgresql,
   SiPython,
@@ -26,11 +30,12 @@ import {
 } from 'react-icons/si';
 import { usePortfolio } from '@/components/portfolio-shell';
 import type { Project } from '@/data/portfolio';
+import { itemReveal, pageFadeUp, premiumEase, sectionReveal, staggerReveal, viewportOnce } from '@/lib/motion';
 
-const categories: Array<Project['category'] | 'All'> = ['All', 'Web', 'Database', 'Desktop', 'Game', 'AI'];
+const categories: Array<Project['category'] | 'All'> = ['All', 'Web', 'Mobile', 'Desktop', 'Game', 'AI'];
 
 const skillIcons = {
-  java: SiOpenjdk,
+  java: FaJava,
   python: SiPython,
   typescript: SiTypescript,
   kotlin: SiKotlin,
@@ -122,11 +127,11 @@ export function HomePage() {
   const featuredProjects = copy.projects.slice(0, 3);
 
   return (
-    <main className="mx-auto flex w-[min(1200px,calc(100%-32px))] flex-col gap-10 py-12">
-      <section>
-        <article className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-neutral-950/80 p-8 shadow-soft">
+    <motion.main className="mx-auto flex w-[min(1200px,calc(100%-32px))] flex-col gap-10 py-12" initial="hidden" animate="visible" variants={pageFadeUp}>
+      <motion.section data-scroll-section="true" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={sectionReveal}>
+        <motion.article className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-neutral-950/80 p-8 shadow-soft" variants={staggerReveal}>
           <div className="grid items-start gap-8 lg:grid-cols-[1fr_320px]">
-            <div>
+            <motion.div variants={itemReveal}>
               <span className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white">{copy.hero.eyebrow}</span>
               <h1 className="mt-4 max-w-[12ch] text-5xl font-semibold tracking-[-0.04em] text-white md:text-7xl">{copy.hero.title}</h1>
               <p className="mt-5 max-w-3xl text-base leading-8 text-neutral-300 md:text-lg">{copy.hero.summary}</p>
@@ -144,33 +149,37 @@ export function HomePage() {
                 <SocialIconLink href="https://www.linkedin.com/in/joshua-lozano" label="LinkedIn" icon={<LinkedInIcon />} external />
                 <SocialIconLink href="https://github.com/JoshuaLozano04" label="GitHub" icon={<GitHubIcon />} external />
               </div>
-            </div>
+            </motion.div>
 
-            <div className="hidden lg:block">
+            <motion.div className="hidden lg:block" variants={itemReveal}>
               <img src="/images/profile.jpg" alt="Portrait of Joshua S. Lozano" className="aspect-[0.92] w-full rounded-[1.25rem] object-cover" />
               <div className="mt-4 text-center">
                 <div className="text-lg font-semibold text-white">Joshua S. Lozano</div>
                 <div className="text-sm text-neutral-400">Full Stack Developer</div>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </article>
-      </section>
+        </motion.article>
+      </motion.section>
 
-      <SectionHeading title={copy.featured} description={copy.hero.featuredDescription} />
-      <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <motion.section data-scroll-section="true" className="grid gap-6" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={sectionReveal}>
+        <SectionHeading title={copy.featured} description={copy.hero.featuredDescription} />
+        <motion.div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3" variants={staggerReveal}>
         {featuredProjects.map((project) => (
           <ProjectCard key={`${project.title}-${project.year}`} project={project} />
         ))}
-      </section>
-      <div className="flex justify-center">
-        <ActionLink href="/projects" icon={<ArrowRightIcon />} label="See more" variant="primary" />
-      </div>
+        </motion.div>
+        <motion.div className="flex justify-center" variants={itemReveal}>
+          <ActionLink href="/projects" icon={<ArrowRightIcon />} label="See more" variant="primary" />
+        </motion.div>
+      </motion.section>
 
-      <SectionHeading title={copy.hero.toolsTitle} description={copy.hero.toolsDescription} />
-      <HomeSkillsPreview />
+      <motion.section data-scroll-section="true" className="grid gap-5" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={sectionReveal}>
+        <SectionHeading title={copy.hero.toolsTitle} description={copy.hero.toolsDescription} />
+        <HomeSkillsPreview />
+      </motion.section>
 
-      <section className="rounded-[2rem] border border-white/10 bg-neutral-950/80 p-7 shadow-soft">
+      <motion.section data-scroll-section="true" className="rounded-[2rem] border border-white/10 bg-neutral-950/80 p-7 shadow-soft" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={sectionReveal}>
         <div className="flex items-center justify-between gap-4">
           <div>
             <h2 className="text-2xl font-semibold text-white">{copy.hero.ctaTitle}</h2>
@@ -178,18 +187,20 @@ export function HomePage() {
           </div>
           <ActionLink href="/contacts" icon={<ArrowRightIcon />} label={copy.hero.ctaButton} variant="primary" />
         </div>
-      </section>
-    </main>
+      </motion.section>
+    </motion.main>
   );
 }
 
 function HomeSkillsPreview() {
   return (
-    <section className="grid gap-5 xl:grid-cols-2">
+    <motion.section className="grid gap-5 xl:grid-cols-2" variants={staggerReveal}>
       {homeSkillGroups.map((group) => (
-        <article
+        <motion.article
           key={group.title}
-          className="group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-neutral-950/80 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.35)] transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_35px_100px_rgba(0,0,0,0.55)]"
+          className="group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-neutral-950/80 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.35)] transition duration-300 hover:border-white/20 hover:shadow-[0_35px_100px_rgba(0,0,0,0.55)]"
+          variants={itemReveal}
+          whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}
         >
           <div
             aria-hidden="true"
@@ -203,26 +214,28 @@ function HomeSkillsPreview() {
             <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-neutral-300">{group.items.length} items</span>
           </div>
 
-          <div className="relative mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <motion.div className="relative mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3" variants={staggerReveal}>
             {group.items.map((item) => {
               const Icon = getSkillIcon(item.iconKey);
 
               return (
-                <div
+                <motion.div
                   key={item.label}
-                  className="group/item flex min-h-[108px] flex-col items-center justify-center gap-3 rounded-3xl border border-white/10 bg-white/[0.04] px-4 py-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.07] hover:shadow-[0_0_24px_rgba(255,255,255,0.08)]"
+                  className="group/item flex min-h-[108px] flex-col items-center justify-center gap-3 rounded-3xl border border-white/10 bg-white/[0.04] px-4 py-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition duration-300 hover:border-white/20 hover:bg-white/[0.07] hover:shadow-[0_0_24px_rgba(255,255,255,0.08)]"
+                  variants={itemReveal}
+                  whileHover={{ y: -4, transition: { duration: 0.2, ease: premiumEase } }}
                 >
                   <span className="grid h-14 w-14 place-items-center rounded-2xl border border-white/10 bg-black/40 text-neutral-200 transition duration-300 group-hover/item:border-white/20 group-hover/item:bg-black/55 group-hover/item:text-white group-hover/item:shadow-[0_0_24px_rgba(255,255,255,0.07)]">
                     <Icon aria-hidden="true" className="h-7 w-7" />
                   </span>
                   <span className="text-sm font-medium leading-5 text-neutral-200 transition duration-300 group-hover/item:text-white">{item.label}</span>
-                </div>
+                </motion.div>
               );
             })}
-          </div>
-        </article>
+          </motion.div>
+        </motion.article>
       ))}
-    </section>
+    </motion.section>
   );
 }
 
@@ -242,9 +255,10 @@ export function ProjectsPage() {
   }, [activeCategory, copy.projects, search]);
 
   return (
-    <main className="mx-auto flex w-[min(1200px,calc(100%-32px))] flex-col gap-10 py-12">
-      <SectionHeading title={copy.hero.projectsTitle} description={copy.hero.projectsDescription} />
-      <div className="flex flex-col gap-5 rounded-[2rem] border border-white/10 bg-neutral-950/80 p-5 shadow-soft lg:flex-row lg:items-center lg:justify-between">
+    <motion.main className="mx-auto flex w-[min(1200px,calc(100%-32px))] flex-col gap-10 py-12" initial="hidden" animate="visible" variants={pageFadeUp}>
+      <motion.section data-scroll-section="true" className="grid gap-5" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={sectionReveal}>
+        <SectionHeading title={copy.hero.projectsTitle} description={copy.hero.projectsDescription} />
+        <motion.div className="flex flex-col gap-5 rounded-[2rem] border border-white/10 bg-neutral-950/80 p-5 shadow-soft lg:flex-row lg:items-center lg:justify-between" variants={staggerReveal}>
         <div className="relative flex-1">
           <input
             value={search}
@@ -259,48 +273,216 @@ export function ProjectsPage() {
         </div>
         <div className="flex flex-wrap gap-2.5">
           {categories.map((category) => (
-            <button
+            <motion.button
               key={category}
               type="button"
               onClick={() => setActiveCategory(category)}
               className={`inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm transition focus:outline-none focus:ring-2 focus:ring-white/10 ${activeCategory === category ? 'border-white bg-white text-black' : 'border-white/10 bg-white/5 text-neutral-400 hover:text-white'}`}
+              whileHover={{ y: -1, scale: 1.01 }}
+              whileTap={{ scale: 0.985 }}
+              transition={{ duration: 0.2, ease: premiumEase }}
             >
-              <CategoryIcon category={category} />
+              <CategoryIcon category={category} active={activeCategory === category} />
               <span>{category}</span>
-            </button>
+            </motion.button>
           ))}
         </div>
-      </div>
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        </motion.div>
+      </motion.section>
+      <motion.div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3" variants={staggerReveal}>
         {filteredProjects.map((project) => (
           <ProjectCard key={`${project.title}-${project.year}`} project={project} />
         ))}
-      </div>
-    </main>
+      </motion.div>
+    </motion.main>
   );
 }
 
 export function AboutPage() {
   const { copy } = usePortfolio();
 
+  const frontendSkills = copy.skills.find((skill) => skill.title === 'Frontend and Interface');
+  const backendSkills = copy.skills.find((skill) => skill.title === 'Backend and Systems');
+  const databaseSkills = copy.skills.find((skill) => skill.title === 'Database and Cloud');
+  const coreSkills = copy.skills.find((skill) => skill.title === 'Core Work Skills');
+  const education = copy.skills.find((skill) => skill.title === 'Education');
+
+  const focusAreas = ['AI Applications', 'Full Stack Development', 'Backend Systems', 'Cross-platform Development'];
+
   return (
-    <main className="mx-auto flex w-[min(1200px,calc(100%-32px))] flex-col gap-10 py-12">
-      <SectionHeading title={copy.hero.aboutTitle} description={copy.hero.aboutDescription} />
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {copy.skills.map((skill) => (
-          <article key={skill.title} className="rounded-[1.5rem] border border-white/10 bg-neutral-950/80 p-6 shadow-soft">
-            <h3 className="text-lg font-semibold text-white">{skill.title}</h3>
-            <div className="mt-5 flex flex-wrap gap-2.5">
-              {skill.items.map((item) => (
-                <span key={item} className="rounded-full border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-neutral-300">
-                  {item}
-                </span>
+    <motion.main className="mx-auto flex w-[min(1200px,calc(100%-32px))] flex-col gap-12 py-12 md:gap-14 md:py-16" initial="hidden" animate="visible" variants={pageFadeUp}>
+      <motion.section data-scroll-section="true" className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.03] p-8 shadow-[0_30px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl md:p-10 lg:p-12" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={sectionReveal}>
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(56,189,248,0.08),transparent_28%)]" />
+        <div className="relative grid gap-8 lg:grid-cols-[1.3fr_0.7fr] lg:items-end">
+          <div className="max-w-4xl">
+            <span className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium uppercase tracking-[0.22em] text-neutral-400">
+              About Me
+            </span>
+            <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-white md:text-5xl lg:text-6xl">
+              Building modern and scalable digital experiences.
+            </h1>
+            <p className="mt-5 max-w-3xl text-base leading-8 text-neutral-300 md:text-lg md:leading-9">
+              I’m a full stack developer focused on creating fast, reliable, and maintainable applications across web, backend, and AI-powered systems. I enjoy turning complex ideas into clean, practical solutions that balance performance, usability, and long-term scalability.
+            </p>
+            <p className="mt-4 max-w-3xl text-base leading-8 text-neutral-400 md:text-lg md:leading-9">
+                Beyond development, I also work with video editing, combining technical problem-solving with creative presentation.
+            </p>
+          </div>
+
+          <motion.div className="grid gap-3 rounded-[1.75rem] border border-white/10 bg-black/25 p-5 backdrop-blur-md" variants={staggerReveal}>
+            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <div className="grid h-11 w-11 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-neutral-200">
+                <Sparkles className="h-5 w-5" aria-hidden="true" />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-[0.22em] text-neutral-500">Approach</p>
+                <p className="mt-1 text-sm text-neutral-200">Minimal, practical, polished</p>
+              </div>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+              {focusAreas.map((area) => (
+                <motion.div key={area} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-neutral-300" variants={itemReveal} whileHover={{ y: -2, transition: { duration: 0.2, ease: premiumEase } }}>
+                  {area}
+                </motion.div>
               ))}
             </div>
-          </article>
-        ))}
+          </motion.div>
+        </div>
+      </motion.section>
+
+      <motion.section data-scroll-section="true" className="grid gap-6" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={sectionReveal}>
+        <SectionHeading title="Programming Languages and Tools" description="The same core languages and tools highlighted on the home tab, organized for easier scanning." />
+        <motion.div className="grid gap-5 xl:grid-cols-2" variants={staggerReveal}>
+          {homeSkillGroups.map((group) => (
+            <motion.article key={group.title} className="group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.3)] backdrop-blur-xl transition duration-300 hover:border-white/20 hover:shadow-[0_35px_100px_rgba(0,0,0,0.45)] md:p-7" variants={itemReveal} whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}>
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.06),transparent_32%)] opacity-60 transition duration-300 group-hover:opacity-100" />
+              <div className="relative flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-neutral-500">{group.title}</p>
+                  <p className="mt-2 text-sm leading-7 text-neutral-400">
+                    {group.title === 'Programming'
+                      ? 'Primary languages I use to build application logic, services, and interactive experiences.'
+                      : group.title === 'Frontend'
+                        ? 'Client-side building blocks for responsive interfaces and cross-platform presentation.'
+                        : group.title === 'Backend'
+                          ? 'Server-side frameworks and runtime tools for APIs, workflows, and application logic.'
+                          : group.title === 'Databases'
+                            ? 'Storage systems and data layers used to keep applications structured and reliable.'
+                            : 'Supporting tools I use for cloud deployment, version control, and design collaboration.'}
+                  </p>
+                </div>
+              </div>
+              <div className="relative mt-5 flex flex-wrap gap-2.5">
+                {group.items.map((item) => {
+                  const Icon = getSkillIcon(item.iconKey);
+
+                  return (
+                    <motion.span
+                      key={item.label}
+                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-neutral-300"
+                      whileHover={{ y: -1, transition: { duration: 0.2, ease: premiumEase } }}
+                    >
+                      <Icon aria-hidden="true" className="h-3.5 w-3.5 text-neutral-400" />
+                      {item.label}
+                    </motion.span>
+                  );
+                })}
+              </div>
+            </motion.article>
+          ))}
+        </motion.div>
+      </motion.section>
+
+      <motion.section data-scroll-section="true" className="grid gap-6 lg:grid-cols-2 lg:items-start" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={staggerReveal}>
+        <AboutPanel title="Frontend" description="Interfaces, interaction polish, and responsive design." icon={<MonitorSmartphone className="h-4 w-4" aria-hidden="true" />}>
+          {frontendSkills?.items.map((item) => (
+            <Tag key={item}>{item}</Tag>
+          ))}
+        </AboutPanel>
+
+        <AboutPanel title="Backend" description="APIs, business logic, authentication, and system reliability." icon={<ServerCog className="h-4 w-4" aria-hidden="true" />}>
+          {backendSkills?.items.map((item) => (
+            <Tag key={item}>{item}</Tag>
+          ))}
+        </AboutPanel>
+      </motion.section>
+
+      <motion.section data-scroll-section="true" className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-start" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={staggerReveal}>
+        <AboutPanel title="Database" description="Data modeling, persistence, and cloud-aware storage design." icon={<Database className="h-4 w-4" aria-hidden="true" />}>
+          {databaseSkills?.items.map((item) => (
+            <Tag key={item}>{item}</Tag>
+          ))}
+        </AboutPanel>
+
+        <AboutPanel title="Skills" description="Core strengths that support shipping dependable products." icon={<BrainCircuit className="h-4 w-4" aria-hidden="true" />}>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {coreSkills?.items.map((item) => (
+              <motion.div key={item} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-neutral-300" variants={itemReveal} whileHover={{ y: -2, transition: { duration: 0.2, ease: premiumEase } }}>
+                {item}
+              </motion.div>
+            ))}
+          </div>
+        </AboutPanel>
+      </motion.section>
+
+      <motion.section data-scroll-section="true" className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={staggerReveal}>
+        <motion.article className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-7" variants={itemReveal} whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}>
+          <div className="flex items-center gap-3">
+            <SectionIcon icon={<GraduationCap className="h-4 w-4" aria-hidden="true" />} />
+            <div>
+              <p className="text-xs uppercase tracking-[0.22em] text-neutral-500">Education</p>
+              <h2 className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-white">Academic foundation</h2>
+            </div>
+          </div>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            {education?.items.map((item) => (
+              <motion.div key={item} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm leading-6 text-neutral-300" variants={itemReveal} whileHover={{ y: -2, transition: { duration: 0.2, ease: premiumEase } }}>
+                {item}
+              </motion.div>
+            ))}
+          </div>
+        </motion.article>
+
+        <motion.article className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-7" variants={itemReveal} whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-neutral-500">Focus Areas</p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            {focusAreas.map((area) => (
+              <motion.div key={area} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4 text-sm font-medium tracking-[0.01em] text-neutral-200 transition duration-300 hover:border-white/20 hover:bg-white/[0.05]" whileHover={{ y: -2, transition: { duration: 0.2, ease: premiumEase } }}>
+                {area}
+              </motion.div>
+            ))}
+          </div>
+        </motion.article>
+      </motion.section>
+    </motion.main>
+  );
+}
+
+function AboutPanel({ title, description, icon, children }: { title: string; description: string; icon: ReactNode; children: ReactNode }) {
+  return (
+    <motion.article className="group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.3)] backdrop-blur-xl transition duration-300 hover:border-white/20 hover:shadow-[0_35px_100px_rgba(0,0,0,0.45)] md:p-7" variants={itemReveal} whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.06),transparent_32%)] opacity-60 transition duration-300 group-hover:opacity-100" />
+      <div className="relative flex items-start gap-3">
+        <SectionIcon icon={icon} />
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-neutral-500">{title}</p>
+          <p className="mt-2 max-w-xl text-sm leading-7 text-neutral-400">{description}</p>
+        </div>
       </div>
-    </main>
+      <div className="relative mt-5 flex flex-wrap gap-2.5">{children}</div>
+    </motion.article>
+  );
+}
+
+function SectionIcon({ icon }: { icon: ReactNode }) {
+  return <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-neutral-200">{icon}</span>;
+}
+
+function Tag({ children }: { children: ReactNode }) {
+  return (
+    <motion.span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium tracking-[0.01em] text-neutral-300" whileHover={{ y: -1, transition: { duration: 0.2, ease: premiumEase } }}>
+      {children}
+    </motion.span>
   );
 }
 
@@ -308,26 +490,26 @@ export function ContactsPage() {
   const { copy } = usePortfolio();
 
   return (
-    <main className="mx-auto flex w-[min(1200px,calc(100%-32px))] flex-col gap-10 py-12">
-      <SectionHeading title={copy.hero.contactsTitle} description={copy.hero.contactsDescription} />
+    <motion.main className="mx-auto flex w-[min(1200px,calc(100%-32px))] flex-col gap-10 py-12" initial="hidden" animate="visible" variants={pageFadeUp}>
+      <motion.section data-scroll-section="true" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={sectionReveal}>
+        <SectionHeading title={copy.hero.contactsTitle} description={copy.hero.contactsDescription} />
+      </motion.section>
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <article className="rounded-[2rem] border border-white/10 bg-neutral-950/80 p-7 shadow-soft">
+        <motion.article className="rounded-[2rem] border border-white/10 bg-neutral-950/80 p-7 shadow-soft" variants={itemReveal} whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}>
           <ContactForm submitLabel={copy.hero.submitButton} />
-        </article>
-        <article className="rounded-[2rem] border border-white/10 bg-neutral-950/80 p-7 shadow-soft">
+        </motion.article>
+        <motion.article className="rounded-[2rem] border border-white/10 bg-neutral-950/80 p-7 shadow-soft" variants={itemReveal} whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}>
           <h3 className="text-xl font-semibold text-white">{copy.hero.contactSideTitle}</h3>
           <p className="mt-4 text-sm leading-7 text-neutral-400">{copy.hero.contactSideCopy}</p>
           <div className="mt-6 flex flex-wrap gap-2.5">
-              {/* <Chip>melchizedek.lozano@gmail.com</Chip>
-              <Chip>LinkedIn</Chip>
-              <Chip>GitHub</Chip>
-              <Chip>reCAPTCHA ready</Chip>
-              */}
+            <SocialIconLink href="mailto:melchizedek.lozano@gmail.com" label="Email" icon={<EmailIcon />} />
+            <SocialIconLink href="https://www.linkedin.com/in/joshua-lozano" label="LinkedIn" icon={<LinkedInIcon />} external />
+            <SocialIconLink href="https://github.com/JoshuaLozano04" label="GitHub" icon={<GitHubIcon />} external />
           </div>
           <p className="mt-6 text-sm leading-7 text-neutral-400">{copy.hero.contactNote}</p>
-        </article>
+        </motion.article>
       </div>
-    </main>
+    </motion.main>
   );
 }
 
@@ -341,7 +523,11 @@ function SectionHeading({ title, description }: { title: string; description: st
 }
 
 function Chip({ children }: { children: ReactNode }) {
-  return <span className="rounded-full border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-neutral-300">{children}</span>;
+  return (
+    <motion.span className="rounded-full border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-neutral-300" whileHover={{ y: -1, transition: { duration: 0.2, ease: premiumEase } }}>
+      {children}
+    </motion.span>
+  );
 }
 
 function ActionLink({ href, icon, label, variant }: { href: string; icon: ReactNode; label: string; variant: 'primary' | 'secondary' }) {
@@ -352,141 +538,65 @@ function ActionLink({ href, icon, label, variant }: { href: string; icon: ReactN
       : 'border border-white/10 bg-white/6 text-white hover:bg-white/10 hover:border-white/20 focus:outline-none focus:ring-2 focus:ring-white/10';
 
   return (
-    <a href={href} className={`${base} ${styles}`}>
+    <motion.a href={href} className={`${base} ${styles}`} whileHover={{ y: -2, scale: 1.01, transition: { duration: 0.2, ease: premiumEase } }} whileTap={{ scale: 0.985 }}>
       <span>{label}</span>
       <span className="text-current">{icon}</span>
-    </a>
+    </motion.a>
   );
 }
 
 function SocialIconLink({ href, icon, label, external }: { href: string; icon: ReactNode; label: string; external?: boolean }) {
   return (
-    <a
+    <motion.a
       href={href}
       aria-label={label}
       title={label}
       {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
       className="grid h-12 w-12 place-items-center rounded-2xl border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10"
+      whileHover={{ y: -1, scale: 1.02, transition: { duration: 0.2, ease: premiumEase } }}
+      whileTap={{ scale: 0.98 }}
     >
       <span className="text-white">{icon}</span>
-    </a>
+    </motion.a>
   );
 }
 
 function ArrowRightIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <path d="M5 12h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="m13 6 6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
+  return <HiArrowRight aria-hidden="true" className="h-5 w-5" />;
 }
 
 function EmailIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <path d="M4.5 7.5h15v9h-15v-9Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-      <path d="m5.5 8.5 6.5 5 6.5-5" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-    </svg>
-  );
+  return <HiOutlineEnvelope aria-hidden="true" className="h-5 w-5" />;
 }
 
 function LinkedInIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <path d="M6.5 9.2V18M6.5 6.7v.2M10.2 18v-4.6c0-1.5 1-2.7 2.5-2.7s2.4 1.1 2.4 2.7V18M10.2 13.6V9.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <rect x="4.5" y="4.5" width="15" height="15" rx="3" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  );
+  return <FaLinkedinIn aria-hidden="true" className="h-5 w-5" />;
 }
 
 function GitHubIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <path d="M12 4.5a7.5 7.5 0 0 0-2.4 14.6c.4.1.6-.2.6-.4v-1.4c-2.3.5-2.8-1-2.8-1-.4-.9-.9-1.2-.9-1.2-.8-.6.1-.6.1-.6.9.1 1.4.9 1.4.9.7 1.2 1.8.8 2.2.6.1-.5.3-.8.6-1-1.8-.2-3.6-.9-3.6-4.1 0-.9.3-1.6.8-2.2-.1-.2-.4-1 .1-2 0 0 .7-.2 2.3.8a8 8 0 0 1 4.2 0c1.6-1 2.3-.8 2.3-.8.5 1 .2 1.8.1 2 .5.6.8 1.3.8 2.2 0 3.2-1.8 3.9-3.6 4.1.3.3.6.8.6 1.6v2.4c0 .2.2.5.6.4A7.5 7.5 0 0 0 12 4.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-    </svg>
-  );
+  return <FaGithub aria-hidden="true" className="h-5 w-5" />;
 }
 
 function GridIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <path d="M5 5h6v6H5V5Zm8 0h6v6h-6V5ZM5 13h6v6H5v-6Zm8 0h6v6h-6v-6Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-    </svg>
-  );
+  return <HiOutlineSquares2X2 aria-hidden="true" className="h-5 w-5" />;
 }
 
-function CategoryIcon({ category }: { category: Project['category'] | 'All' }) {
+function CategoryIcon({ category, active }: { category: Project['category'] | 'All'; active?: boolean }) {
   const icons: Record<string, ReactNode> = {
-    All: <DotsIcon />,
-    Web: <GlobeIcon />,
-    Database: <DatabaseIcon />,
-    Desktop: <MonitorIcon />,
-    Game: <GamepadIcon />,
-    AI: <SparkIcon />
+    All: <HiOutlineEllipsisHorizontal aria-hidden="true" className="h-5 w-5" />,
+    Web: <HiOutlineGlobeAlt aria-hidden="true" className="h-5 w-5" />,
+    Mobile: <HiDevicePhoneMobile aria-hidden="true" className="h-5 w-5" />,
+    Desktop: <HiOutlineComputerDesktop aria-hidden="true" className="h-5 w-5" />,
+    Game: <IoGameControllerOutline aria-hidden="true" className="h-5 w-5" />,
+    AI: <HiOutlineSparkles aria-hidden="true" className="h-5 w-5" />
   };
 
-  return <span className="text-white">{icons[category]}</span>;
-}
-
-function DotsIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <circle cx="6" cy="12" r="1.6" fill="currentColor" />
-      <circle cx="12" cy="12" r="1.6" fill="currentColor" />
-      <circle cx="18" cy="12" r="1.6" fill="currentColor" />
-    </svg>
-  );
-}
-
-function GlobeIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <circle cx="12" cy="12" r="7.5" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M4.8 12h14.4M12 4.5c2.2 2 3.5 4.5 3.5 7.5S14.2 17 12 19.5M12 4.5c-2.2 2-3.5 4.5-3.5 7.5S9.8 17 12 19.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function DatabaseIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <ellipse cx="12" cy="5.5" rx="6.5" ry="2.8" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M5.5 5.5v7c0 1.5 2.9 2.8 6.5 2.8s6.5-1.3 6.5-2.8v-7M5.5 12.5v6c0 1.5 2.9 2.8 6.5 2.8s6.5-1.3 6.5-2.8v-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function MonitorIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <rect x="4.5" y="5.5" width="15" height="10" rx="1.8" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M9 18.5h6M12 15.5v3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function GamepadIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <path d="M7.2 9.5h9.6c2 0 3.7 1.6 3.7 3.7 0 2.1-1.6 3.7-3.7 3.7H7.2c-2 0-3.7-1.6-3.7-3.7 0-2.1 1.6-3.7 3.7-3.7Z" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M8.5 12.2h3M10 10.7v3M15.9 11.5h.01M17.8 13h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function SparkIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <path d="m12 3 1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7L12 3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-      <path d="M18.5 14.5l.9 2.5 2.5.9-2.5.9-.9 2.5-.9-2.5-2.5-.9 2.5-.9.9-2.5Z" fill="currentColor" opacity="0.8" />
-    </svg>
-  );
+  return <span className={active ? 'text-black' : 'text-white'}>{icons[category]}</span>;
 }
 
 function ProjectCard({ project }: { project: Project }) {
   return (
-    <article className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-neutral-950/80 shadow-soft transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg">
+    <motion.article className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-neutral-950/80 shadow-soft transition-transform duration-200 hover:shadow-lg" variants={itemReveal} whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}>
       {Array.isArray(project.image) ? (
         <ImageCarousel images={project.image} />
       ) : project.image ? (
@@ -511,16 +621,16 @@ function ProjectCard({ project }: { project: Project }) {
         <p className="text-sm leading-7 text-neutral-400">{project.summary}</p>
         <div className="flex flex-wrap gap-2">
           {project.tech.map((item) => (
-            <span key={item} className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white">
+            <motion.span key={item} className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white" whileHover={{ y: -1, transition: { duration: 0.2, ease: premiumEase } }}>
               {item}
-            </span>
+            </motion.span>
           ))}
         </div>
         <div className="text-sm text-neutral-400">
           <span className="font-semibold text-white">Role:</span> {project.role}
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 }
 
@@ -573,9 +683,9 @@ function ContactForm({ submitLabel }: { submitLabel: string }) {
         <input id="captcha-check" type="checkbox" className="h-4 w-4 accent-white" required />
         I am not a bot
       </label>
-      <button type="submit" className="w-fit rounded-2xl bg-white px-5 py-3 font-medium text-black shadow-soft transition hover:bg-neutral-200">
+      <motion.button type="submit" className="w-fit rounded-2xl bg-white px-5 py-3 font-medium text-black shadow-soft transition hover:bg-neutral-200" whileHover={{ y: -2, scale: 1.01, transition: { duration: 0.2, ease: premiumEase } }} whileTap={{ scale: 0.985 }}>
         {submitLabel}
-      </button>
+      </motion.button>
     </form>
   );
 }

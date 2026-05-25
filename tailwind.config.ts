@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
+  darkMode: 'class',
   content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}', './lib/**/*.{ts,tsx}', './data/**/*.{ts,tsx}'],
   theme: {
     extend: {
@@ -27,7 +28,7 @@ const config: Config = {
       }
     }
   },
-  plugins: [require("@tailwindcss/line-clamp")]
+  plugins: []
 };
 
 export default config;

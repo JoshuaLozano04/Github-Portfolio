@@ -7,7 +7,7 @@ This file is the reference for all future portfolio work in this workspace.
 - Next.js
 - Tailwind CSS
 - Vercel for deployment
-- Framer Motion optional for animations
+- Framer Motion used for site motion and shared animation presets
 - MDX optional for blogs and project writeups
 
 ## Local Development
@@ -114,6 +114,7 @@ Home should stay shorter than the other pages and act as the landing summary.
 - [app/contacts/page.tsx](app/contacts/page.tsx): Contacts page.
 - [components/portfolio-shell.tsx](components/portfolio-shell.tsx): shared navbar, language, and theme state.
 - [components/portfolio-sections.tsx](components/portfolio-sections.tsx): page section components.
+- [lib/motion.ts](lib/motion.ts): shared Framer Motion variants, easing, and viewport presets.
 - [data/portfolio.ts](data/portfolio.ts): CV copy, translations, projects, and skills.
 - [app/globals.css](app/globals.css): global styling.
 - [public/images](public/images): profile photo and project assets.
@@ -133,6 +134,57 @@ Home should stay shorter than the other pages and act as the landing summary.
   - `npm run serve` — production-style preview using `next start`
 
 ## Session Changes (May 2026)
+
+### Motion System Updates
+
+- **Added Framer Motion across the site**:
+  - Page load now fades in with a subtle upward motion.
+  - Navbar fades in smoothly and uses animated active-link underlines.
+  - Sections reveal with staggered, viewport-based motion.
+
+- **Reusable motion presets**:
+  - Shared variants and timing live in `lib/motion.ts`.
+  - Use the shared easing and reveal presets for consistent premium motion.
+
+- **Interaction polish**:
+  - Cards, chips, buttons, and navigation links use subtle hover lift and transition feedback.
+  - Motion stays restrained: no bounce, spin, parallax-heavy effects, or flashy animation.
+
+- **Ambient background motion**:
+  - Added very low-opacity radial gradient motion for depth.
+  - Keep background animation subtle and slow.
+
+- **Reduced motion support**:
+  - MotionConfig respects user reduced-motion preferences.
+  - Global CSS also reduces transitions and scroll motion when needed.
+
+- **Current motion guidelines**:
+  - Entrance animations should stay in the 0.6s to 0.9s range.
+  - Hover effects should stay in the 0.2s to 0.4s range.
+  - Use `whileInView`, `viewport={{ once: true }}`, and staggered variants for section reveals.
+  - Keep the experience premium, minimal, and professional.
+
+### Scroll Navigation Updates
+
+- **Added fixed right-side scroll arrows**:
+  - Small up/down buttons now sit on the right side of the page.
+  - The arrows use a minimal dark glass style with subtle borders and blur.
+  - They stay unobtrusive and match the premium portfolio aesthetic.
+
+- **Scroll behavior**:
+  - Down arrow appears near the top of the page and moves to the next section.
+  - Up arrow appears after scrolling and returns to the previous section or top.
+  - Buttons hide when they are not needed to avoid clutter.
+
+- **Section targeting**:
+  - Major page wrappers use `data-scroll-section="true"` markers.
+  - The shared shell detects visible sections and scrolls between them with smooth `scrollIntoView` behavior.
+
+- **Implementation notes**:
+  - Right-side scroll controls live in `components/portfolio-shell.tsx`.
+  - Section markers were added in `components/portfolio-sections.tsx`.
+  - The arrows use lucide `ChevronUp` and `ChevronDown` icons.
+  - Reduced motion preferences are respected when scrolling.
 
 ### Projects Updates
 
@@ -183,9 +235,51 @@ Home should stay shorter than the other pages and act as the landing summary.
   - Cloud: AWS
   - Game Dev: Ren'Py
 
+### Theme Persistence Updates
+
+- **Global theme provider architecture**:
+  - Added centralized theme state in `components/theme-provider.tsx`
+  - Exported `useTheme()` hook for shared access across pages/components
+  - Replaced page-level/local theme ownership with provider-managed state
+
+- **Persistent theme storage**:
+  - Theme is saved to `localStorage` using key `portfolio-theme`
+  - Saved theme is restored on load and reused on route navigation
+  - Theme source constants and guards live in `lib/theme.ts`
+
+- **Hydration-safe initial theme**:
+  - Injected pre-hydration script (`THEME_INIT_SCRIPT`) in `app/layout.tsx` head
+  - Script applies theme to document before React hydration to prevent flash
+  - Enabled `suppressHydrationWarning` on `<html>` for SSR/client attribute parity
+
+- **Global document application**:
+  - Theme is applied consistently to `document.documentElement` and `document.body`
+  - Uses both `data-theme` and `dark` class toggling for compatibility
+  - Updates `color-scheme` (`dark`/`light`) to keep native UI aligned
+
+- **Cross-tab synchronization**:
+  - Theme changes are synchronized across browser tabs via `storage` event listener
+  - Switching in one tab updates all open tabs automatically
+
+- **Tailwind and transition compatibility**:
+  - Set `darkMode: 'class'` in `tailwind.config.ts`
+  - Kept `data-theme`-based global styles in `app/globals.css`
+  - Added smooth theme transitions for background, text, and border colors (~220ms to 240ms)
+
+- **Implementation rule moving forward**:
+  - Do not add new page-level `theme` state or direct localStorage theme logic in route components.
+  - Always use `useTheme()` from `components/theme-provider.tsx`.
+
 ### Key Files Modified
 
 - `data/portfolio.ts`: Added CarbonSense, updated project structure, sorted by year
 - `components/portfolio-sections.tsx`: Added ImageCarousel, ToolIcon, ToolLogos, getLogoKeys; restructured Home skills; fixed JSX
 - `public/images/projects/mycrewmanager/`: Copied asset files
 - `public/images/projects/carbonsense/`: Carbonsense asset files (pre-existing)
+- `components/theme-provider.tsx`: Added global theme context, persistence, hydration handling, cross-tab sync
+- `lib/theme.ts`: Added theme constants, guards, and pre-hydration init script
+- `app/layout.tsx`: Injected theme init script and wrapped app with `ThemeProvider`
+- `components/portfolio-shell.tsx`: Switched from local theme state to global `useTheme()`
+- `components/portfolio-app.tsx`: Removed local theme state and reused global `useTheme()`
+- `tailwind.config.ts`: Enabled class-based dark mode
+- `app/globals.css`: Added smoother global theme transition styling
