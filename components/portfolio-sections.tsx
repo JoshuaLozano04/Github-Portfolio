@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import { motion } from 'framer-motion';
-import { BrainCircuit, Database, GraduationCap, MonitorSmartphone, ServerCog, Sparkles } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { BrainCircuit, ChevronLeft, ChevronRight, Database, GraduationCap, MonitorSmartphone, ServerCog, Sparkles } from 'lucide-react';
 import { FaAws, FaJava } from 'react-icons/fa6';
 import { FaGithub, FaLinkedinIn } from 'react-icons/fa6';
 import { HiArrowRight, HiDevicePhoneMobile, HiOutlineComputerDesktop, HiOutlineEllipsisHorizontal, HiOutlineEnvelope, HiOutlineGlobeAlt, HiOutlineSquares2X2, HiOutlineSparkles } from 'react-icons/hi2';
@@ -634,26 +634,130 @@ function ProjectCard({ project }: { project: Project }) {
   );
 }
 
-function ImageCarousel({ images, interval = 3500 }: { images: string[]; interval?: number }) {
+function ImageCarousel({ images, interval = 4800 }: { images: string[]; interval?: number }) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [isPaused, setIsPaused] = useState(false);
+
+  const imageCount = images.length;
+
+  const goToSlide = (nextIndex: number) => {
+    if (imageCount <= 1) {
+      return;
+    }
+
+    const normalizedIndex = (nextIndex + imageCount) % imageCount;
+
+    if (normalizedIndex === activeIndex) {
+      return;
+    }
+
+    const movingForward =
+      (activeIndex === imageCount - 1 && normalizedIndex === 0) ||
+      (normalizedIndex > activeIndex && !(activeIndex === 0 && normalizedIndex === imageCount - 1));
+
+    setDirection(movingForward ? 1 : -1);
+    setActiveIndex(normalizedIndex);
+  };
+
+  const goToNext = () => {
+    goToSlide(activeIndex + 1);
+  };
+
+  const goToPrevious = () => {
+    goToSlide(activeIndex - 1);
+  };
 
   useEffect(() => {
-    if (!images || images.length <= 1) return;
-    const timer = setInterval(() => setActiveIndex((current) => (current + 1) % images.length), interval);
+    if (!images || imageCount <= 1 || isPaused) {
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setDirection(1);
+      setActiveIndex((current) => (current + 1) % imageCount);
+    }, interval);
+
     return () => clearInterval(timer);
-  }, [images, interval]);
+  }, [images, imageCount, interval, isPaused]);
 
   return (
-    <div className="relative aspect-[1.65] w-full overflow-hidden">
-      {images.map((src, slideIndex) => (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          key={src}
-          src={src}
-          alt=""
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${slideIndex === activeIndex ? 'opacity-100' : 'opacity-0'}`}
-        />
-      ))}
+    <div
+      className="group relative aspect-[1.65] w-full overflow-hidden"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onFocusCapture={() => setIsPaused(true)}
+      onBlurCapture={() => setIsPaused(false)}
+    >
+      <AnimatePresence initial={false} mode="wait" custom={direction}>
+        <motion.div
+          key={`${images[activeIndex]}-${activeIndex}`}
+          custom={direction}
+          initial={{ opacity: 0.85, x: direction > 0 ? 24 : -24 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0.82, x: direction > 0 ? -20 : 20 }}
+          transition={{ duration: 0.65, ease: premiumEase }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.08}
+          dragMomentum
+          onDragEnd={(_, info) => {
+            const swipe = Math.abs(info.offset.x) + Math.abs(info.velocity.x) * 0.2;
+            if (swipe < 90) {
+              return;
+            }
+
+            if (info.offset.x < 0) {
+              goToNext();
+              return;
+            }
+
+            goToPrevious();
+          }}
+          className="absolute inset-0 will-change-transform"
+          style={{ touchAction: 'pan-y' }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={images[activeIndex]} alt="" className="h-full w-full object-cover will-change-transform" draggable={false} />
+        </motion.div>
+      </AnimatePresence>
+
+      {imageCount > 1 && (
+        <>
+          <button
+            type="button"
+            aria-label="Previous slide"
+            onClick={goToPrevious}
+            className="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-black/35 p-2 text-white/90 opacity-0 backdrop-blur-sm transition duration-300 hover:bg-black/55 hover:text-white group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-white/25"
+          >
+            <ChevronLeft aria-hidden="true" className="h-4 w-4" />
+          </button>
+
+          <button
+            type="button"
+            aria-label="Next slide"
+            onClick={goToNext}
+            className="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-black/35 p-2 text-white/90 opacity-0 backdrop-blur-sm transition duration-300 hover:bg-black/55 hover:text-white group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-white/25"
+          >
+            <ChevronRight aria-hidden="true" className="h-4 w-4" />
+          </button>
+
+          <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-1.5 backdrop-blur-sm">
+            {images.map((src, slideIndex) => {
+              const isActive = slideIndex === activeIndex;
+              return (
+                <button
+                  key={`${src}-${slideIndex}`}
+                  type="button"
+                  aria-label={`Go to slide ${slideIndex + 1}`}
+                  onClick={() => goToSlide(slideIndex)}
+                  className={`h-2.5 rounded-full transition-all duration-300 ${isActive ? 'w-6 bg-white' : 'w-2.5 bg-white/45 hover:bg-white/70'}`}
+                />
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }
