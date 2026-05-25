@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { BrainCircuit, ChevronLeft, ChevronRight, Database, GraduationCap, MonitorSmartphone, ServerCog, Sparkles } from 'lucide-react';
@@ -596,53 +596,81 @@ function CategoryIcon({ category, active }: { category: Project['category'] | 'A
 
 function ProjectCard({ project }: { project: Project }) {
   return (
-    <motion.article className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-neutral-950/80 shadow-soft transition-transform duration-200 hover:shadow-lg" variants={itemReveal} whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}>
-      {Array.isArray(project.image) ? (
-        <ImageCarousel images={project.image} />
-      ) : project.image ? (
-        <img src={project.image} alt={`${project.title} preview`} className="aspect-[1.65] w-full object-cover" />
-      ) : (
-        <div className="grid aspect-[1.65] place-items-center border-b border-white/10 bg-gradient-to-br from-white/5 to-black px-6 text-left">
-          <div className="grid gap-3">
-            <span className="w-fit rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-neutral-300">{project.category}</span>
-            <h3 className="max-w-[12ch] text-2xl font-semibold leading-9 text-white">{project.title}</h3>
-            <p className="max-w-sm text-sm leading-7 text-neutral-400">{project.year} project</p>
+    <motion.article
+      className="group relative overflow-hidden rounded-[1.5rem] border border-white/[0.06] bg-white/[0.03] p-3 shadow-[0_22px_52px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-colors duration-300 hover:border-white/[0.12] md:p-4"
+      variants={itemReveal}
+      whileHover={{ y: -3, transition: { duration: 0.24, ease: premiumEase } }}
+      style={{ willChange: 'transform' }}
+    >
+      <div className="overflow-hidden rounded-[1.15rem] border border-white/[0.08] bg-black/25">
+        {Array.isArray(project.image) ? (
+          <ImageCarousel images={project.image} title={project.title} />
+        ) : project.image ? (
+          <img src={project.image} alt={`${project.title} preview`} className="aspect-[16/9] w-full object-cover" />
+        ) : (
+          <div className="grid aspect-[16/9] place-items-center bg-gradient-to-br from-white/5 via-white/[0.03] to-black/55 px-5 text-left">
+            <div className="grid gap-2">
+              <span className="w-fit rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.16em] text-neutral-300">{project.category}</span>
+              <h3 className="max-w-[16ch] text-xl font-semibold leading-tight tracking-[-0.01em] text-white">{project.title}</h3>
+              <p className="text-xs text-neutral-400">{project.year} project</p>
+            </div>
           </div>
+        )}
+      </div>
+
+      <div className="grid gap-3 px-1 pb-1 pt-4">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="text-lg font-semibold leading-tight tracking-[-0.015em] text-white md:text-[1.15rem]">{project.title}</h3>
+          <span className="shrink-0 rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.15em] text-neutral-400">{project.category}</span>
         </div>
-      )}
-      <div className="grid gap-4 p-6">
-        <div className="flex flex-wrap items-center gap-2 text-sm text-neutral-400">
-          <strong className="text-white">{project.title}</strong>
-          <span>•</span>
+
+        <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.14em] text-neutral-500">
           <span>{project.year}</span>
-          <span>•</span>
-          <span>{project.category}</span>
+          <span className="h-1 w-1 rounded-full bg-neutral-600" />
+          <span className="truncate">{project.role}</span>
         </div>
-        <p className="text-sm leading-7 text-neutral-400">{project.summary}</p>
-        <div className="flex flex-wrap gap-2">
+
+        <p className="overflow-hidden text-sm leading-6 text-neutral-300 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3]">
+          {project.summary}
+        </p>
+
+        <div className="flex flex-wrap gap-1.5 pt-0.5">
           {project.tech.map((item) => (
-            <motion.span key={item} className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white" whileHover={{ y: -1, transition: { duration: 0.2, ease: premiumEase } }}>
+            <motion.span
+              key={item}
+              className="rounded-full border border-white/[0.09] bg-white/[0.025] px-2.5 py-1 text-[11px] font-medium text-neutral-300 transition-colors duration-200 hover:border-white/[0.16] hover:bg-white/[0.055] hover:text-white"
+              whileHover={{ y: -1, transition: { duration: 0.18, ease: premiumEase } }}
+              style={{ willChange: 'transform' }}
+            >
               {item}
             </motion.span>
           ))}
-        </div>
-        <div className="text-sm text-neutral-400">
-          <span className="font-semibold text-white">Role:</span> {project.role}
         </div>
       </div>
     </motion.article>
   );
 }
 
-function ImageCarousel({ images, interval = 4800 }: { images: string[]; interval?: number }) {
+function ImageCarousel({ images, title, interval = 5200 }: { images: string[]; title: string; interval?: number }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isPaused, setIsPaused] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const transitionDuration = 0.62;
+  const animationLockMs = Math.round(transitionDuration * 1000);
+  const minGapMs = 220;
+  const lastActionAt = useRef(0);
 
   const imageCount = images.length;
 
-  const goToSlide = (nextIndex: number) => {
+  const goToSlide = useCallback((nextIndex: number) => {
     if (imageCount <= 1) {
+      return;
+    }
+
+    const now = Date.now();
+    if (isAnimating || now - lastActionAt.current < minGapMs) {
       return;
     }
 
@@ -656,54 +684,79 @@ function ImageCarousel({ images, interval = 4800 }: { images: string[]; interval
       (activeIndex === imageCount - 1 && normalizedIndex === 0) ||
       (normalizedIndex > activeIndex && !(activeIndex === 0 && normalizedIndex === imageCount - 1));
 
+    lastActionAt.current = now;
+    setIsAnimating(true);
     setDirection(movingForward ? 1 : -1);
     setActiveIndex(normalizedIndex);
-  };
+  }, [activeIndex, imageCount, isAnimating]);
 
-  const goToNext = () => {
+  const goToNext = useCallback(() => {
     goToSlide(activeIndex + 1);
-  };
+  }, [activeIndex, goToSlide]);
 
-  const goToPrevious = () => {
+  const goToPrevious = useCallback(() => {
     goToSlide(activeIndex - 1);
-  };
+  }, [activeIndex, goToSlide]);
 
   useEffect(() => {
-    if (!images || imageCount <= 1 || isPaused) {
+    if (!isAnimating) {
+      return;
+    }
+
+    const unlock = setTimeout(() => {
+      setIsAnimating(false);
+    }, animationLockMs);
+
+    return () => clearTimeout(unlock);
+  }, [animationLockMs, isAnimating]);
+
+  useEffect(() => {
+    if (!images || imageCount <= 1 || isPaused || isAnimating) {
       return;
     }
 
     const timer = setInterval(() => {
+      const now = Date.now();
+      if (now - lastActionAt.current < minGapMs) {
+        return;
+      }
+
+      lastActionAt.current = now;
       setDirection(1);
+      setIsAnimating(true);
       setActiveIndex((current) => (current + 1) % imageCount);
     }, interval);
 
     return () => clearInterval(timer);
-  }, [images, imageCount, interval, isPaused]);
+  }, [images, imageCount, interval, isPaused, isAnimating]);
 
   return (
     <div
-      className="group relative aspect-[1.65] w-full overflow-hidden"
+      className="group relative aspect-[16/9] w-full overflow-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onFocusCapture={() => setIsPaused(true)}
       onBlurCapture={() => setIsPaused(false)}
     >
-      <AnimatePresence initial={false} mode="wait" custom={direction}>
+      <AnimatePresence initial={false} custom={direction}>
         <motion.div
           key={`${images[activeIndex]}-${activeIndex}`}
           custom={direction}
-          initial={{ opacity: 0.85, x: direction > 0 ? 24 : -24 }}
+          initial={{ opacity: 0, x: direction > 0 ? 44 : -44 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0.82, x: direction > 0 ? -20 : 20 }}
-          transition={{ duration: 0.65, ease: premiumEase }}
+          exit={{ opacity: 0, x: direction > 0 ? -44 : 44 }}
+          transition={{ duration: transitionDuration, ease: premiumEase }}
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.08}
-          dragMomentum
+          dragElastic={0.06}
+          dragMomentum={false}
           onDragEnd={(_, info) => {
-            const swipe = Math.abs(info.offset.x) + Math.abs(info.velocity.x) * 0.2;
-            if (swipe < 90) {
+            if (isAnimating) {
+              return;
+            }
+
+            const swipe = Math.abs(info.offset.x) + Math.abs(info.velocity.x) * 0.24;
+            if (swipe < 110) {
               return;
             }
 
@@ -714,11 +767,11 @@ function ImageCarousel({ images, interval = 4800 }: { images: string[]; interval
 
             goToPrevious();
           }}
-          className="absolute inset-0 will-change-transform"
+          className="absolute inset-0"
           style={{ touchAction: 'pan-y' }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={images[activeIndex]} alt="" className="h-full w-full object-cover will-change-transform" draggable={false} />
+          <img src={images[activeIndex]} alt={`${title} preview ${activeIndex + 1}`} className="h-full w-full object-cover" draggable={false} />
         </motion.div>
       </AnimatePresence>
 
@@ -728,7 +781,8 @@ function ImageCarousel({ images, interval = 4800 }: { images: string[]; interval
             type="button"
             aria-label="Previous slide"
             onClick={goToPrevious}
-            className="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-black/35 p-2 text-white/90 opacity-0 backdrop-blur-sm transition duration-300 hover:bg-black/55 hover:text-white group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-white/25"
+            className="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/15 bg-black/35 p-1.5 text-white/80 opacity-0 transition duration-300 hover:border-white/25 hover:text-white group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-white/20"
+            disabled={isAnimating}
           >
             <ChevronLeft aria-hidden="true" className="h-4 w-4" />
           </button>
@@ -737,25 +791,43 @@ function ImageCarousel({ images, interval = 4800 }: { images: string[]; interval
             type="button"
             aria-label="Next slide"
             onClick={goToNext}
-            className="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-black/35 p-2 text-white/90 opacity-0 backdrop-blur-sm transition duration-300 hover:bg-black/55 hover:text-white group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-white/25"
+            className="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/15 bg-black/35 p-1.5 text-white/80 opacity-0 transition duration-300 hover:border-white/25 hover:text-white group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-white/20"
+            disabled={isAnimating}
           >
             <ChevronRight aria-hidden="true" className="h-4 w-4" />
           </button>
 
-          <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-1.5 backdrop-blur-sm">
-            {images.map((src, slideIndex) => {
-              const isActive = slideIndex === activeIndex;
-              return (
-                <button
-                  key={`${src}-${slideIndex}`}
-                  type="button"
-                  aria-label={`Go to slide ${slideIndex + 1}`}
-                  onClick={() => goToSlide(slideIndex)}
-                  className={`h-2.5 rounded-full transition-all duration-300 ${isActive ? 'w-6 bg-white' : 'w-2.5 bg-white/45 hover:bg-white/70'}`}
-                />
-              );
-            })}
+          <div className="pointer-events-none absolute bottom-3 left-3 right-3 z-20 flex items-center justify-between gap-3">
+            <div className="pointer-events-auto flex items-center gap-1 rounded-full border border-white/10 bg-black/35 px-2 py-1">
+              {images.map((src, slideIndex) => {
+                const isActive = slideIndex === activeIndex;
+                return (
+                  <button
+                    key={`${src}-${slideIndex}`}
+                    type="button"
+                    aria-label={`Go to slide ${slideIndex + 1}`}
+                    onClick={() => goToSlide(slideIndex)}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${isActive ? 'w-6 bg-white' : 'w-2 bg-white/40 hover:bg-white/65'}`}
+                    disabled={isAnimating}
+                  />
+                );
+              })}
+            </div>
+
+            <div className="hidden rounded-full border border-white/10 bg-black/35 px-2 py-1 text-[10px] font-medium tracking-[0.14em] text-neutral-300 sm:block">
+              {activeIndex + 1}/{imageCount}
+            </div>
           </div>
+
+          <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/10">
+            <motion.div
+              className="h-full bg-white/70"
+              animate={{ width: `${((activeIndex + 1) / imageCount) * 100}%` }}
+              transition={{ duration: 0.35, ease: premiumEase }}
+            />
+          </div>
+
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.05)_0%,rgba(0,0,0,0)_40%,rgba(0,0,0,0.5)_100%)]" />
         </>
       )}
     </div>
