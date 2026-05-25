@@ -283,3 +283,22 @@ Home should stay shorter than the other pages and act as the landing summary.
 - `components/portfolio-app.tsx`: Removed local theme state and reused global `useTheme()`
 - `tailwind.config.ts`: Enabled class-based dark mode
 - `app/globals.css`: Added smoother global theme transition styling
+
+## Latest Updates (May 25, 2026)
+
+### Identity and Layout Scaling
+
+- Updated portfolio display name to **Melchizedek Joshua Lozano** across app copy and metadata.
+- Applied responsive typography safeguards so long-name rendering does not break layout in hero and header contexts.
+- Updated profile alt text and branding labels to keep naming consistent.
+
+### Premium Project Carousel Refresh
+
+- Refined project cards to be more compact, balanced, and easier to scan.
+- Enforced consistent 16:9 media framing and reduced excessive card height.
+- Limited project summaries using line clamp for cleaner card rhythm.
+- Restyled tech stack tags with lighter spacing, subtler borders, and cleaner hover feedback.
+- Reworked carousel motion for smoother slide/fade transitions using transform + opacity animation only.
+- Added animation lock / interaction gating to prevent overlapping slide transitions and jitter.
+- Improved drag/swipe behavior for mobile by reducing momentum artifacts and stabilizing thresholds.
+- Updated navigation controls with slimmer arrows, modern indicators, and subtle progress feedback.
