@@ -524,11 +524,7 @@ function GitHubStatsPanel({ username }: { username: string }) {
   const [topLanguages, setTopLanguages] = useState<Array<{ name: string; count: number }>>([]);
   const [profileError, setProfileError] = useState<string | null>(null);
   const [graphFailed, setGraphFailed] = useState(false);
-  const [statsFailed, setStatsFailed] = useState(false);
   const [langsFailed, setLangsFailed] = useState(false);
-  const [graphLoading, setGraphLoading] = useState(true);
-  const [statsLoading, setStatsLoading] = useState(true);
-  const [langsLoading, setLangsLoading] = useState(true);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -592,27 +588,19 @@ function GitHubStatsPanel({ username }: { username: string }) {
   const followers = profile?.followers ?? 0;
   const following = profile?.following ?? 0;
   const graphUrl = `https://github-readme-activity-graph.vercel.app/graph?username=${username}&theme=github-compact&hide_border=true&area=true`;
-  const statsUrl = `/api/github-stats?username=${username}`;
   const languagesUrl = `/api/github-top-langs?username=${username}`;
 
   return (
     <div className="mt-5 grid gap-4">
       <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-3">
         {!graphFailed ? (
-          <div className="relative">
-            {graphLoading && <div className="aspect-[1200/360] animate-pulse rounded-[1.1rem] bg-white/5" />}
-            <img
-              src={graphUrl}
-              alt="GitHub contribution graph"
-              className={`h-auto w-full rounded-[1.1rem] ${graphLoading ? 'hidden' : 'block'}`}
-              loading="lazy"
-              onLoad={() => setGraphLoading(false)}
-              onError={() => {
-                setGraphLoading(false);
-                setGraphFailed(true);
-              }}
-            />
-          </div>
+          <img
+            src={graphUrl}
+            alt="GitHub contribution graph"
+            className="mx-auto block h-auto w-auto max-w-full max-h-[220px] rounded-[1.1rem] object-contain"
+            loading="lazy"
+            onError={() => setGraphFailed(true)}
+          />
         ) : (
           <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] p-5">
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">Contribution graph unavailable</p>
@@ -630,49 +618,14 @@ function GitHubStatsPanel({ username }: { username: string }) {
 
       <div className="grid gap-4">
         <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-3">
-          {!statsFailed ? (
-            <div className="relative">
-              {statsLoading && <div className="aspect-[1200/360] animate-pulse rounded-[1.1rem] bg-white/5" />}
-              <img
-                src={statsUrl}
-                alt="GitHub stats card"
-                className={`h-auto w-full rounded-[1.1rem] ${statsLoading ? 'hidden' : 'block'}`}
-                loading="lazy"
-                onLoad={() => setStatsLoading(false)}
-                onError={() => {
-                  setStatsLoading(false);
-                  setStatsFailed(true);
-                }}
-              />
-            </div>
-          ) : (
-            <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] p-5">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">GitHub stats unavailable</p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-                <GitHubMetric label="Public repos" value={totalRepos} />
-                <GitHubMetric label="Followers" value={followers} />
-                <GitHubMetric label="Following" value={following} />
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-3">
           {!langsFailed ? (
-            <div className="relative">
-              {langsLoading && <div className="aspect-[1200/360] animate-pulse rounded-[1.1rem] bg-white/5" />}
-              <img
-                src={languagesUrl}
-                alt="Top programming languages card"
-                className={`h-auto w-full rounded-[1.1rem] ${langsLoading ? 'hidden' : 'block'}`}
-                loading="lazy"
-                onLoad={() => setLangsLoading(false)}
-                onError={() => {
-                  setLangsLoading(false);
-                  setLangsFailed(true);
-                }}
-              />
-            </div>
+            <img
+              src={languagesUrl}
+              alt="Top programming languages card"
+              className="mx-auto block h-auto w-auto max-w-full max-h-[220px] rounded-[1.1rem] object-contain"
+              loading="eager"
+              onError={() => setLangsFailed(true)}
+            />
           ) : topLanguages.length ? (
             <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] p-5">
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">Top languages fallback</p>
@@ -696,16 +649,6 @@ function GitHubStatsPanel({ username }: { username: string }) {
             </div>
           )}
         </div>
-
-        <details className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-4 text-xs text-neutral-400">
-          <summary className="cursor-pointer list-none text-sm font-medium text-neutral-200">Direct image URLs</summary>
-          <div className="mt-3 grid gap-2 break-all">
-            <a className="hover:text-white" href={graphUrl} target="_blank" rel="noreferrer">Graph: {graphUrl}</a>
-            <a className="hover:text-white" href={statsUrl} target="_blank" rel="noreferrer">Stats: {statsUrl}</a>
-            <a className="hover:text-white" href={languagesUrl} target="_blank" rel="noreferrer">Top languages: {languagesUrl}</a>
-          </div>
-        </details>
-
       </div>
     </div>
   );
