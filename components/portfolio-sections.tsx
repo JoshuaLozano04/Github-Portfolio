@@ -143,7 +143,7 @@ function getAboutSkillCardLayout(title: string) {
 }
 
 export function HomePage() {
-  const { copy } = usePortfolio();
+  const { copy, theme } = usePortfolio();
   const featuredProjects = copy.projects.slice(0, 3);
 
   return (
@@ -152,11 +152,10 @@ export function HomePage() {
         <motion.article className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-neutral-950/80 p-8 shadow-soft" variants={staggerReveal}>
           <div className="grid items-start gap-8 lg:grid-cols-[1fr_320px]">
             <motion.div variants={itemReveal}>
-              <span className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white">{copy.hero.eyebrow}</span>
               <h1 className="mt-4 max-w-[18ch] text-4xl font-semibold leading-[1.05] tracking-[-0.035em] text-white sm:text-5xl md:text-6xl lg:text-7xl">{copy.hero.title}</h1>
               <p className="mt-5 max-w-3xl text-base leading-8 text-neutral-300 md:text-lg">{copy.hero.summary}</p>
               <p className="mt-5 text-sm text-neutral-400">
-                Based in <span className="text-neutral-100">{copy.hero.location}</span>
+                Based in <span className={theme === 'ink' ? 'text-black' : 'text-neutral-100'}>{copy.hero.location}</span>
               </p>
 
               <div className="mt-7 flex flex-wrap items-center gap-3">
@@ -332,9 +331,6 @@ export function AboutPage() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(56,189,248,0.08),transparent_28%)]" />
         <div className="relative grid gap-8 lg:grid-cols-[1.3fr_0.7fr] lg:items-end">
           <div className="max-w-4xl">
-            <span className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium uppercase tracking-[0.22em] text-neutral-400">
-              About Me
-            </span>
             <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-white md:text-5xl lg:text-6xl">
               Building modern and scalable digital experiences.
             </h1>
@@ -460,6 +456,20 @@ export function AboutPage() {
         </motion.article>
       </motion.section>
 
+      <motion.section data-scroll-section="true" className="grid gap-6" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={sectionReveal}>
+        <motion.article className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-7" variants={itemReveal} whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}>
+          <div className="flex items-center gap-3">
+            <SectionIcon icon={<FaGithub className="h-4 w-4" aria-hidden="true" />} />
+            <div>
+              <p className="text-xs uppercase tracking-[0.22em] text-neutral-500">GitHub Activity</p>
+              <h2 className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-white">Contributions and stats</h2>
+            </div>
+          </div>
+
+          <GitHubStatsPanel username="JoshuaLozano04" />
+        </motion.article>
+      </motion.section>
+
       <motion.section data-scroll-section="true" className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={staggerReveal}>
         <motion.article className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-7" variants={itemReveal} whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}>
           <div className="flex items-center gap-3">
@@ -495,6 +505,219 @@ export function AboutPage() {
 
 function SectionIcon({ icon }: { icon: ReactNode }) {
   return <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-neutral-200">{icon}</span>;
+}
+
+type GitHubProfile = {
+  public_repos: number;
+  followers: number;
+  following: number;
+  public_gists: number;
+};
+
+type GitHubRepo = {
+  language: string | null;
+  stargazers_count: number;
+};
+
+function GitHubStatsPanel({ username }: { username: string }) {
+  const [profile, setProfile] = useState<GitHubProfile | null>(null);
+  const [topLanguages, setTopLanguages] = useState<Array<{ name: string; count: number }>>([]);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [graphFailed, setGraphFailed] = useState(false);
+  const [statsFailed, setStatsFailed] = useState(false);
+  const [langsFailed, setLangsFailed] = useState(false);
+  const [graphLoading, setGraphLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [langsLoading, setLangsLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadStats = async () => {
+      try {
+        const [profileResponse, reposResponse] = await Promise.all([
+          fetch(`https://api.github.com/users/${username}`, {
+            signal: controller.signal,
+            headers: { Accept: 'application/vnd.github+json' }
+          }),
+          fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated`, {
+            signal: controller.signal,
+            headers: { Accept: 'application/vnd.github+json' }
+          })
+        ]);
+
+        if (!profileResponse.ok) {
+          throw new Error('Unable to load GitHub profile stats.');
+        }
+
+        const profileData = (await profileResponse.json()) as GitHubProfile;
+        setProfile(profileData);
+
+        if (!reposResponse.ok) {
+          throw new Error('Unable to load GitHub repository data.');
+        }
+
+        const repos = (await reposResponse.json()) as GitHubRepo[];
+        const languageCounts = new Map<string, number>();
+
+        repos.forEach((repo) => {
+          if (!repo.language) {
+            return;
+          }
+
+          languageCounts.set(repo.language, (languageCounts.get(repo.language) ?? 0) + 1);
+        });
+
+        setTopLanguages(
+          Array.from(languageCounts.entries())
+            .sort((first, second) => second[1] - first[1])
+            .slice(0, 4)
+            .map(([name, count]) => ({ name, count }))
+        );
+      } catch (error) {
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        setProfileError(error instanceof Error ? error.message : 'Unable to load GitHub stats.');
+      }
+    };
+
+    void loadStats();
+
+    return () => controller.abort();
+  }, [username]);
+
+  const totalRepos = profile?.public_repos ?? 0;
+  const followers = profile?.followers ?? 0;
+  const following = profile?.following ?? 0;
+  const graphUrl = `https://github-readme-activity-graph.vercel.app/graph?username=${username}&theme=github-compact&hide_border=true&area=true`;
+  const statsUrl = `/api/github-stats?username=${username}`;
+  const languagesUrl = `/api/github-top-langs?username=${username}`;
+
+  return (
+    <div className="mt-5 grid gap-4">
+      <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-3">
+        {!graphFailed ? (
+          <div className="relative">
+            {graphLoading && <div className="aspect-[1200/360] animate-pulse rounded-[1.1rem] bg-white/5" />}
+            <img
+              src={graphUrl}
+              alt="GitHub contribution graph"
+              className={`h-auto w-full rounded-[1.1rem] ${graphLoading ? 'hidden' : 'block'}`}
+              loading="lazy"
+              onLoad={() => setGraphLoading(false)}
+              onError={() => {
+                setGraphLoading(false);
+                setGraphFailed(true);
+              }}
+            />
+          </div>
+        ) : (
+          <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] p-5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">Contribution graph unavailable</p>
+            <p className="mt-2 text-sm leading-7 text-neutral-300">
+              The live graph service did not load, so the fallback stats below are shown instead.
+            </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              <GitHubMetric label="Public repos" value={totalRepos} />
+              <GitHubMetric label="Followers" value={followers} />
+              <GitHubMetric label="Following" value={following} />
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="grid gap-4">
+        <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-3">
+          {!statsFailed ? (
+            <div className="relative">
+              {statsLoading && <div className="aspect-[1200/360] animate-pulse rounded-[1.1rem] bg-white/5" />}
+              <img
+                src={statsUrl}
+                alt="GitHub stats card"
+                className={`h-auto w-full rounded-[1.1rem] ${statsLoading ? 'hidden' : 'block'}`}
+                loading="lazy"
+                onLoad={() => setStatsLoading(false)}
+                onError={() => {
+                  setStatsLoading(false);
+                  setStatsFailed(true);
+                }}
+              />
+            </div>
+          ) : (
+            <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] p-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">GitHub stats unavailable</p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+                <GitHubMetric label="Public repos" value={totalRepos} />
+                <GitHubMetric label="Followers" value={followers} />
+                <GitHubMetric label="Following" value={following} />
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-3">
+          {!langsFailed ? (
+            <div className="relative">
+              {langsLoading && <div className="aspect-[1200/360] animate-pulse rounded-[1.1rem] bg-white/5" />}
+              <img
+                src={languagesUrl}
+                alt="Top programming languages card"
+                className={`h-auto w-full rounded-[1.1rem] ${langsLoading ? 'hidden' : 'block'}`}
+                loading="lazy"
+                onLoad={() => setLangsLoading(false)}
+                onError={() => {
+                  setLangsLoading(false);
+                  setLangsFailed(true);
+                }}
+              />
+            </div>
+          ) : topLanguages.length ? (
+            <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] p-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">Top languages fallback</p>
+              <div className="mt-4 grid gap-3">
+                {topLanguages.map((item) => (
+                  <div key={item.name} className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] px-4 py-3">
+                    <div className="flex items-center justify-between gap-4 text-sm text-neutral-200">
+                      <span>{item.name}</span>
+                      <span className="text-neutral-400">{item.count} repos</span>
+                    </div>
+                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
+                      <div className="h-full rounded-full bg-gradient-to-r from-cyan-300 to-sky-500" style={{ width: `${Math.max(18, (item.count / Math.max(1, topLanguages[0]?.count ?? 1)) * 100)}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] p-5 text-sm leading-7 text-neutral-300">
+              Loading top language data...
+            </div>
+          )}
+        </div>
+
+        <details className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-4 text-xs text-neutral-400">
+          <summary className="cursor-pointer list-none text-sm font-medium text-neutral-200">Direct image URLs</summary>
+          <div className="mt-3 grid gap-2 break-all">
+            <a className="hover:text-white" href={graphUrl} target="_blank" rel="noreferrer">Graph: {graphUrl}</a>
+            <a className="hover:text-white" href={statsUrl} target="_blank" rel="noreferrer">Stats: {statsUrl}</a>
+            <a className="hover:text-white" href={languagesUrl} target="_blank" rel="noreferrer">Top languages: {languagesUrl}</a>
+          </div>
+        </details>
+
+      </div>
+    </div>
+  );
+}
+
+function GitHubMetric({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] p-4">
+      <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">{label}</div>
+      <div className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-white">{value}</div>
+    </div>
+  );
 }
 
 export function ContactsPage() {
