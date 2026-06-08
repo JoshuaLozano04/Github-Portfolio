@@ -69,6 +69,12 @@ type HomeSkillGroup = {
   items: HomeSkillItem[];
 };
 
+type CoreSkillCluster = {
+  title: string;
+  description: string;
+  items: string[];
+};
+
 const homeSkillGroups: HomeSkillGroup[] = [
   {
     title: 'Programming',
@@ -124,7 +130,7 @@ function getSkillIcon(iconKey: SkillIconKey) {
 
 function getAboutSkillCardLayout(title: string) {
   if (title === 'Programming') {
-    return 'col-span-12 lg:col-span-8';
+    return 'col-span-12 lg:col-span-6';
   }
 
   if (title === 'Frontend') {
@@ -132,14 +138,18 @@ function getAboutSkillCardLayout(title: string) {
   }
 
   if (title === 'Backend') {
-    return 'col-span-12 sm:col-span-6 lg:col-span-6';
+    return 'col-span-12 sm:col-span-6 lg:col-span-4';
   }
 
   if (title === 'Databases') {
-    return 'col-span-12 sm:col-span-6 lg:col-span-6';
+    return 'col-span-12 sm:col-span-6 lg:col-span-4';
   }
 
-  return 'col-span-12 lg:col-span-12';
+  if (title === 'Cloud & Tools') {
+    return 'col-span-12 lg:col-span-6';
+  }
+
+  return 'col-span-12 lg:col-span-6';
 }
 
 export function HomePage() {
@@ -323,54 +333,67 @@ export function AboutPage() {
   const coreSkills = copy.skills.find((skill) => skill.title === 'Core Work Skills');
   const education = copy.skills.find((skill) => skill.title === 'Education');
 
-  const focusAreas = ['AI Applications', 'Full Stack Development', 'Backend Systems', 'Cross-platform Development'];
+  const coreSkillClusters = useMemo<CoreSkillCluster[]>(() => {
+    const items = coreSkills?.items ?? [];
+
+    return [
+      {
+        title: 'Leadership and teamwork',
+        description: 'How I collaborate when a project needs coordination and follow-through.',
+        items: items.filter((item) => item === 'Leadership' || item === 'Teamwork' || item === 'Collaboration')
+      },
+      {
+        title: 'Problem solving and learning',
+        description: 'The habits I lean on when a brief is unclear or the solution needs refinement.',
+        items: items.filter((item) => item === 'Trainability' || item === 'Computational thinking' || item === 'Problem solving')
+      },
+      {
+        title: 'AI and product thinking',
+        description: 'Where I connect technical execution with practical use cases.',
+        items: items.filter((item) => item === 'AI development')
+      }
+    ].filter((cluster) => cluster.items.length > 0);
+  }, [coreSkills?.items]);
 
   return (
-    <motion.main className="mx-auto flex w-[min(1200px,calc(100%-32px))] flex-col gap-12 py-12 md:gap-14 md:py-16" initial="hidden" animate="visible" variants={pageFadeUp}>
-      <motion.section data-scroll-section="true" className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.03] p-8 shadow-[0_30px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl md:p-10 lg:p-12" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={sectionReveal}>
+    <motion.main className="mx-auto flex w-[min(1200px,calc(100%-32px))] flex-col gap-14 py-14 md:gap-16 md:py-16" initial="hidden" animate="visible" variants={pageFadeUp}>
+      <motion.section data-scroll-section="true" className="relative overflow-hidden rounded-[2rem] bg-white/[0.03] p-8 shadow-[0_30px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl md:p-10 lg:p-12" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={sectionReveal}>
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(56,189,248,0.08),transparent_28%)]" />
-        <div className="relative grid gap-8 lg:grid-cols-[1.3fr_0.7fr] lg:items-end">
-          <div className="max-w-4xl">
-            <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-white md:text-5xl lg:text-6xl">
+        <div className="relative grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(220px,280px)] lg:items-start lg:gap-12">
+          <div className="max-w-3xl">
+            <h1 className="mt-2 max-w-[14ch] text-4xl font-semibold leading-[1.06] tracking-[-0.05em] text-white md:text-5xl lg:text-6xl">
               Building modern and scalable digital experiences.
             </h1>
-            <p className="mt-5 max-w-3xl text-base leading-8 text-neutral-300 md:text-lg md:leading-9">
+            <p className="mt-6 max-w-[62ch] text-base leading-8 text-neutral-300 md:text-lg md:leading-9">
               I’m a full stack developer focused on creating fast, reliable, and maintainable applications across web, backend, and AI-powered systems. I enjoy turning complex ideas into clean, practical solutions that balance performance, usability, and long-term scalability.
             </p>
-            <p className="mt-4 max-w-3xl text-base leading-8 text-neutral-400 md:text-lg md:leading-9">
+            <p className="mt-5 max-w-[62ch] text-base leading-8 text-neutral-400 md:text-lg md:leading-9">
                 Beyond development, I also work with video editing, combining technical problem-solving with creative presentation.
             </p>
           </div>
 
-          <motion.div className="grid gap-3 rounded-[1.75rem] border border-white/10 bg-black/25 p-5 backdrop-blur-md" variants={staggerReveal}>
-            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-              <div className="grid h-11 w-11 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-neutral-200">
+          <motion.div className="grid h-fit gap-3 rounded-[1.5rem] bg-black/25 p-4 backdrop-blur-md lg:justify-self-end" variants={staggerReveal}>
+            <div className="flex items-center gap-3 rounded-2xl bg-white/[0.04] p-4">
+              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-white/[0.06] text-neutral-200">
                 <Sparkles className="h-5 w-5" aria-hidden="true" />
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.22em] text-neutral-500">Approach</p>
+                <p className="text-xs uppercase tracking-[0.22em] text-neutral-500">Working Style</p>
                 <p className="mt-1 text-sm text-neutral-200">Minimal, practical, polished</p>
               </div>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-              {focusAreas.map((area) => (
-                <motion.div key={area} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-neutral-300" variants={itemReveal} whileHover={{ y: -2, transition: { duration: 0.2, ease: premiumEase } }}>
-                  {area}
-                </motion.div>
-              ))}
             </div>
           </motion.div>
         </div>
       </motion.section>
 
       <motion.section data-scroll-section="true" className="grid gap-6" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={sectionReveal}>
-        <SectionHeading title="Programming Languages and Tools" description="A curated stack arranged with intentional hierarchy for quick scanning and stronger visual rhythm." />
+        <SectionHeading title="Programming Languages and Tools" description="The main technologies I use to build and ship projects across web, mobile, backend, and AI work." />
 
-        <motion.div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-12 lg:gap-5" variants={staggerReveal}>
+        <motion.div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-12 lg:gap-5 lg:auto-rows-fr" variants={staggerReveal}>
           {homeSkillGroups.map((group) => (
             <motion.article
               key={group.title}
-              className={`group relative overflow-hidden rounded-[1.5rem] border border-white/[0.06] bg-white/[0.03] p-5 shadow-[0_20px_55px_rgba(0,0,0,0.32)] backdrop-blur-xl transition duration-300 hover:border-white/[0.12] hover:shadow-[0_26px_65px_rgba(0,0,0,0.42)] sm:p-6 ${getAboutSkillCardLayout(group.title)}`}
+              className={`group relative flex h-full min-h-[220px] flex-col overflow-hidden rounded-[1.5rem] bg-white/[0.03] p-5 shadow-[0_20px_55px_rgba(0,0,0,0.32)] backdrop-blur-xl transition duration-300 hover:bg-white/[0.04] hover:shadow-[0_26px_65px_rgba(0,0,0,0.42)] sm:p-6 ${getAboutSkillCardLayout(group.title)}`}
               variants={itemReveal}
               whileHover={{ y: -3, transition: { duration: 0.24, ease: premiumEase } }}
               style={{ willChange: 'transform' }}
@@ -378,34 +401,21 @@ export function AboutPage() {
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.06),transparent_36%)] opacity-60 transition duration-300 group-hover:opacity-100" />
 
               <div className="relative flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">{group.title}</p>
-                  <p className="mt-2 max-w-xl text-sm leading-6 text-neutral-400">
-                    {group.title === 'Programming'
-                      ? 'Primary languages for product logic, integrations, and scalable delivery.'
-                      : group.title === 'Frontend'
-                        ? 'UI foundations for responsive, polished, and accessible interfaces.'
-                        : group.title === 'Backend'
-                          ? 'Services and application runtime tools for robust API workflows.'
-                          : group.title === 'Databases'
-                            ? 'Data systems used for reliable storage, querying, and performance.'
-                            : 'Deployment and collaboration tools used across build and release cycles.'}
-                  </p>
-                </div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">{group.title}</p>
 
                 <span className="shrink-0 rounded-full border border-white/[0.1] bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-neutral-500">
                   {group.items.length}
                 </span>
               </div>
 
-              <div className="relative mt-4 flex flex-wrap gap-1.5">
+              <div className="relative mt-5 flex flex-1 flex-wrap content-start gap-2.5">
                 {group.items.map((item) => {
                   const Icon = getSkillIcon(item.iconKey);
 
                   return (
                     <motion.span
                       key={item.label}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-white/[0.025] px-2.5 py-1 text-[11px] font-medium text-neutral-300 transition-colors duration-200 hover:border-white/[0.16] hover:bg-white/[0.055] hover:text-white"
+                      className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] px-3.5 py-2 text-xs font-medium text-neutral-300 transition-colors duration-200 hover:bg-white/[0.07] hover:text-white"
                       whileHover={{ y: -1, transition: { duration: 0.18, ease: premiumEase } }}
                       style={{ willChange: 'transform' }}
                     >
@@ -422,7 +432,7 @@ export function AboutPage() {
 
       <motion.section data-scroll-section="true" className="grid gap-6" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={sectionReveal}>
         <motion.article
-          className="group relative overflow-hidden rounded-[1.5rem] border border-white/[0.06] bg-white/[0.03] p-5 shadow-[0_20px_55px_rgba(0,0,0,0.32)] backdrop-blur-xl transition duration-300 hover:border-white/[0.12] hover:shadow-[0_26px_65px_rgba(0,0,0,0.42)] sm:p-6"
+          className="group relative overflow-hidden rounded-[1.5rem] bg-white/[0.03] p-5 shadow-[0_20px_55px_rgba(0,0,0,0.32)] backdrop-blur-xl transition duration-300 hover:bg-white/[0.04] hover:shadow-[0_26px_65px_rgba(0,0,0,0.42)] sm:p-6"
           variants={itemReveal}
           whileHover={{ y: -3, transition: { duration: 0.24, ease: premiumEase } }}
           style={{ willChange: 'transform' }}
@@ -433,7 +443,7 @@ export function AboutPage() {
               <SectionIcon icon={<BrainCircuit className="h-4 w-4" aria-hidden="true" />} />
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">Core Skills</p>
-                <p className="mt-2 max-w-3xl text-sm leading-6 text-neutral-400">Practical strengths that support delivery, collaboration, and dependable product quality.</p>
+                <p className="mt-2 max-w-2xl text-sm leading-7 text-neutral-400">The strengths I bring into team work, independent problem solving, and project delivery.</p>
               </div>
             </div>
             <span className="shrink-0 rounded-full border border-white/[0.1] bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-neutral-500">
@@ -441,23 +451,33 @@ export function AboutPage() {
             </span>
           </div>
 
-          <div className="relative mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {coreSkills?.items.map((item) => (
-              <motion.span
-                key={item}
-                className="inline-flex w-fit items-center rounded-full border border-white/[0.1] bg-white/[0.025] px-2.5 py-1 text-[11px] font-medium text-neutral-300 transition-colors duration-200 hover:border-white/[0.16] hover:bg-white/[0.055] hover:text-white"
-                whileHover={{ y: -1, transition: { duration: 0.18, ease: premiumEase } }}
-                style={{ willChange: 'transform' }}
-              >
-                {item}
-              </motion.span>
+          <div className="relative mt-6 grid gap-4 xl:grid-cols-3">
+            {coreSkillClusters.map((cluster) => (
+              <div key={cluster.title} className="rounded-[1.35rem] border border-white/[0.08] bg-black/15 p-4">
+                <div>
+                  <p className="text-sm font-semibold tracking-[-0.02em] text-white">{cluster.title}</p>
+                  <p className="mt-1 text-xs leading-6 text-neutral-400">{cluster.description}</p>
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2.5">
+                  {cluster.items.map((item) => (
+                    <motion.span
+                      key={item}
+                      className="inline-flex w-fit items-center rounded-full bg-white/[0.03] px-3.5 py-1.5 text-xs font-medium text-neutral-300 transition-colors duration-200 hover:bg-white/[0.07] hover:text-white"
+                      whileHover={{ y: -1, transition: { duration: 0.18, ease: premiumEase } }}
+                      style={{ willChange: 'transform' }}
+                    >
+                      {item}
+                    </motion.span>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </motion.article>
       </motion.section>
 
       <motion.section data-scroll-section="true" className="grid gap-6" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={sectionReveal}>
-        <motion.article className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-7" variants={itemReveal} whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}>
+        <motion.article className="rounded-[1.75rem] bg-white/[0.03] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-7" variants={itemReveal} whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}>
           <div className="flex items-center gap-3">
             <SectionIcon icon={<FaGithub className="h-4 w-4" aria-hidden="true" />} />
             <div>
@@ -470,8 +490,8 @@ export function AboutPage() {
         </motion.article>
       </motion.section>
 
-      <motion.section data-scroll-section="true" className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={staggerReveal}>
-        <motion.article className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-7" variants={itemReveal} whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}>
+      <motion.section data-scroll-section="true" className="grid gap-6 lg:grid-cols-[1fr_0.95fr] lg:items-start" initial="hidden" whileInView="visible" viewport={viewportOnce} variants={staggerReveal}>
+        <motion.article className="rounded-[1.75rem] bg-white/[0.03] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-7" variants={itemReveal} whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}>
           <div className="flex items-center gap-3">
             <SectionIcon icon={<GraduationCap className="h-4 w-4" aria-hidden="true" />} />
             <div>
@@ -481,19 +501,8 @@ export function AboutPage() {
           </div>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {education?.items.map((item) => (
-              <motion.div key={item} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm leading-6 text-neutral-300" variants={itemReveal} whileHover={{ y: -2, transition: { duration: 0.2, ease: premiumEase } }}>
+              <motion.div key={item} className="rounded-2xl bg-black/20 px-4 py-3 text-sm leading-6 text-neutral-300" variants={itemReveal} whileHover={{ y: -2, transition: { duration: 0.2, ease: premiumEase } }}>
                 {item}
-              </motion.div>
-            ))}
-          </div>
-        </motion.article>
-
-        <motion.article className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-7" variants={itemReveal} whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}>
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-neutral-500">Focus Areas</p>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            {focusAreas.map((area) => (
-              <motion.div key={area} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4 text-sm font-medium tracking-[0.01em] text-neutral-200 transition duration-300 hover:border-white/20 hover:bg-white/[0.05]" whileHover={{ y: -2, transition: { duration: 0.2, ease: premiumEase } }}>
-                {area}
               </motion.div>
             ))}
           </div>
@@ -504,7 +513,7 @@ export function AboutPage() {
 }
 
 function SectionIcon({ icon }: { icon: ReactNode }) {
-  return <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-neutral-200">{icon}</span>;
+  return <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white/[0.05] text-neutral-200">{icon}</span>;
 }
 
 type GitHubProfile = {
@@ -591,18 +600,18 @@ function GitHubStatsPanel({ username }: { username: string }) {
   const languagesUrl = `/api/github-top-langs?username=${username}`;
 
   return (
-    <div className="mt-5 grid gap-4">
-      <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-3">
+    <div className="mt-6 grid gap-4 lg:grid-cols-2 lg:items-start">
+      <div className="rounded-[1.5rem] bg-black/20 p-2.5 sm:p-3">
         {!graphFailed ? (
           <img
             src={graphUrl}
             alt="GitHub contribution graph"
-            className="mx-auto block h-auto w-auto max-w-full max-h-[220px] rounded-[1.1rem] object-contain"
+            className="mx-auto block h-auto w-full max-w-none rounded-[1rem] object-contain"
             loading="lazy"
             onError={() => setGraphFailed(true)}
           />
         ) : (
-          <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] p-5">
+          <div className="rounded-[1.25rem] bg-white/[0.03] p-5">
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">Contribution graph unavailable</p>
             <p className="mt-2 text-sm leading-7 text-neutral-300">
               The live graph service did not load, so the fallback stats below are shown instead.
@@ -616,39 +625,37 @@ function GitHubStatsPanel({ username }: { username: string }) {
         )}
       </div>
 
-      <div className="grid gap-4">
-        <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-3">
-          {!langsFailed ? (
-            <img
-              src={languagesUrl}
-              alt="Top programming languages card"
-              className="mx-auto block h-auto w-auto max-w-full max-h-[220px] rounded-[1.1rem] object-contain"
-              loading="eager"
-              onError={() => setLangsFailed(true)}
-            />
-          ) : topLanguages.length ? (
-            <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] p-5">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">Top languages fallback</p>
-              <div className="mt-4 grid gap-3">
-                {topLanguages.map((item) => (
-                  <div key={item.name} className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] px-4 py-3">
-                    <div className="flex items-center justify-between gap-4 text-sm text-neutral-200">
-                      <span>{item.name}</span>
-                      <span className="text-neutral-400">{item.count} repos</span>
-                    </div>
-                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
-                      <div className="h-full rounded-full bg-gradient-to-r from-cyan-300 to-sky-500" style={{ width: `${Math.max(18, (item.count / Math.max(1, topLanguages[0]?.count ?? 1)) * 100)}%` }} />
-                    </div>
+      <div className="rounded-[1.5rem] bg-black/20 p-2.5 sm:p-3">
+        {!langsFailed ? (
+          <img
+            src={languagesUrl}
+            alt="Top programming languages card"
+            className="mx-auto block h-auto w-full max-w-none rounded-[1rem] object-contain"
+            loading="eager"
+            onError={() => setLangsFailed(true)}
+          />
+        ) : topLanguages.length ? (
+          <div className="rounded-[1.25rem] bg-white/[0.03] p-5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">Top languages fallback</p>
+            <div className="mt-4 grid gap-3">
+              {topLanguages.map((item) => (
+                <div key={item.name} className="rounded-[1.25rem] bg-white/[0.03] px-4 py-3">
+                  <div className="flex items-center justify-between gap-4 text-sm text-neutral-200">
+                    <span>{item.name}</span>
+                    <span className="text-neutral-400">{item.count} repos</span>
                   </div>
-                ))}
-              </div>
+                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
+                    <div className="h-full rounded-full bg-gradient-to-r from-cyan-300 to-sky-500" style={{ width: `${Math.max(18, (item.count / Math.max(1, topLanguages[0]?.count ?? 1)) * 100)}%` }} />
+                  </div>
+                </div>
+              ))}
             </div>
-          ) : (
-            <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] p-5 text-sm leading-7 text-neutral-300">
-              Loading top language data...
-            </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="rounded-[1.25rem] bg-white/[0.03] p-5 text-sm leading-7 text-neutral-300">
+            Loading top language data...
+          </div>
+        )}
       </div>
     </div>
   );
@@ -656,7 +663,7 @@ function GitHubStatsPanel({ username }: { username: string }) {
 
 function GitHubMetric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] p-4">
+    <div className="rounded-[1.25rem] bg-white/[0.03] p-4">
       <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">{label}</div>
       <div className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-white">{value}</div>
     </div>
@@ -694,7 +701,7 @@ function SectionHeading({ title, description }: { title: string; description: st
   return (
     <div className="flex flex-col gap-2">
       <h2 className="text-3xl font-semibold tracking-[-0.03em] text-white md:text-4xl">{title}</h2>
-      <p className="max-w-4xl text-sm leading-7 text-neutral-400 md:text-base">{description}</p>
+      {description ? <p className="max-w-4xl text-sm leading-7 text-neutral-400 md:text-base">{description}</p> : null}
     </div>
   );
 }
