@@ -287,14 +287,16 @@ function SkillTicker({ title, direction, speed, skills }: SkillTickerRow) {
 }
 
 function SkillTickerGroup({ skills }: { skills: HomeSkillItem[] }) {
+  const loopedSkills = [...skills, ...skills];
+
   return (
     <>
-      {skills.map((skill) => {
+      {loopedSkills.map((skill, index) => {
         const Icon = getSkillIcon(skill.iconKey);
 
         return (
           <div
-            key={skill.label}
+            key={`${skill.label}-${index}`}
             className="inline-flex shrink-0 items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-medium whitespace-nowrap text-neutral-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-white/15 hover:bg-white/[0.07] hover:shadow-[0_10px_24px_rgba(0,0,0,0.16)] sm:text-[15px]"
           >
             <span className="grid h-8 w-8 place-items-center rounded-full border border-white/10 bg-black/35 text-neutral-200 sm:h-9 sm:w-9">
