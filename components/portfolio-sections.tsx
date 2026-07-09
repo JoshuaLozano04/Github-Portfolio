@@ -69,50 +69,33 @@ type HomeSkillGroup = {
   items: HomeSkillItem[];
 };
 
-type CoreSkillCluster = {
-  title: string;
-  description: string;
-  items: string[];
-};
-
 const homeSkillGroups: HomeSkillGroup[] = [
   {
-    title: 'Programming',
+    title: 'Programming Languages',
     items: [
       { label: 'Java', iconKey: 'java' },
       { label: 'Python', iconKey: 'python' },
       { label: 'TypeScript', iconKey: 'typescript' },
       { label: 'Kotlin', iconKey: 'kotlin' },
-      { label: 'PHP', iconKey: 'php' }
-    ]
-  },
-  {
-    title: 'Frontend',
-    items: [
+      { label: 'PHP', iconKey: 'php' },
       { label: 'HTML', iconKey: 'html' },
-      { label: 'CSS', iconKey: 'css' },
-      { label: 'Flutter', iconKey: 'flutter' }
+      { label: 'CSS', iconKey: 'css' }
     ]
   },
   {
-    title: 'Backend',
+    title: 'Frameworks & Technologies',
     items: [
+      { label: 'Flutter', iconKey: 'flutter' },
       { label: 'Node.js', iconKey: 'node' },
       { label: 'Django', iconKey: 'django' },
       { label: 'Laravel', iconKey: 'laravel' },
-      { label: 'PHP', iconKey: 'php' }
-    ]
-  },
-  {
-    title: 'Databases',
-    items: [
       { label: 'PostgreSQL', iconKey: 'postgresql' },
       { label: 'MySQL', iconKey: 'mysql' },
       { label: 'MongoDB', iconKey: 'mongodb' }
     ]
   },
   {
-    title: 'Cloud & Tools',
+    title: 'Tools & Platforms',
     items: [
       { label: 'AWS', iconKey: 'aws' },
       { label: 'Git', iconKey: 'git' },
@@ -129,23 +112,15 @@ function getSkillIcon(iconKey: SkillIconKey) {
 }
 
 function getAboutSkillCardLayout(title: string) {
-  if (title === 'Programming') {
+  if (title === 'Programming Languages') {
     return 'col-span-full';
   }
 
-  if (title === 'Frontend') {
+  if (title === 'Frameworks & Technologies') {
     return 'col-span-full md:col-span-4';
   }
 
-  if (title === 'Backend') {
-    return 'col-span-full md:col-span-4';
-  }
-
-  if (title === 'Databases') {
-    return 'col-span-full md:col-span-4';
-  }
-
-  if (title === 'Cloud & Tools') {
+  if (title === 'Tools & Platforms') {
     return 'col-span-full';
   }
 
@@ -218,48 +193,49 @@ export function HomePage() {
 
 function HomeSkillsPreview() {
   return (
-    <motion.section className="grid gap-5 xl:grid-cols-2" variants={staggerReveal}>
-      {homeSkillGroups.map((group) => (
+    <motion.section className="grid gap-5" variants={staggerReveal}>
+      {homeSkillGroups.map((group, index) => (
         <motion.article
           key={group.title}
-          className="group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-neutral-950/80 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.35)] transition duration-300 hover:border-white/20 hover:shadow-[0_35px_100px_rgba(0,0,0,0.55)]"
+          className="group overflow-hidden rounded-[1.75rem] border border-white/10 bg-neutral-950/80 px-5 py-5 shadow-[0_24px_70px_rgba(0,0,0,0.32)]"
           variants={itemReveal}
-          whileHover={{ y: -4, transition: { duration: 0.25, ease: premiumEase } }}
+          whileHover={{ y: -2, transition: { duration: 0.25, ease: premiumEase } }}
         >
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_36%)] opacity-70 transition-opacity duration-300 group-hover:opacity-100"
-          />
-          <div className="relative flex items-start justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-neutral-500"></p>
-              <h3 className="mt-2 text-xl font-semibold text-white">{group.title}</h3>
-            </div>
-            <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-neutral-300">{group.items.length} items</span>
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-white">{group.title}</h3>
           </div>
 
-          <motion.div className="relative mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3" variants={staggerReveal}>
-            {group.items.map((item) => {
-              const Icon = getSkillIcon(item.iconKey);
-
-              return (
-                <motion.div
-                  key={item.label}
-                  className="group/item flex min-h-[108px] flex-col items-center justify-center gap-3 rounded-3xl border border-white/10 bg-white/[0.04] px-4 py-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition duration-300 hover:border-white/20 hover:bg-white/[0.07] hover:shadow-[0_0_24px_rgba(255,255,255,0.08)]"
-                  variants={itemReveal}
-                  whileHover={{ y: -4, transition: { duration: 0.2, ease: premiumEase } }}
-                >
-                  <span className="grid h-14 w-14 place-items-center rounded-2xl border border-white/10 bg-black/40 text-neutral-200 transition duration-300 group-hover/item:border-white/20 group-hover/item:bg-black/55 group-hover/item:text-white group-hover/item:shadow-[0_0_24px_rgba(255,255,255,0.07)]">
-                    <Icon aria-hidden="true" className="h-7 w-7" />
-                  </span>
-                  <span className="text-sm font-medium leading-5 text-neutral-200 transition duration-300 group-hover/item:text-white">{item.label}</span>
-                </motion.div>
-              );
-            })}
-          </motion.div>
+          <MarqueeRow items={group.items} />
         </motion.article>
       ))}
     </motion.section>
+  );
+}
+
+function MarqueeRow({ items }: { items: HomeSkillItem[] }) {
+  const repeatedItems = [...items, ...items];
+  const duration = Math.max(14, items.length * 3.5);
+
+  return (
+    <div className="overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+      <div className="marquee-track flex w-max items-center gap-3" style={{ ['--marquee-duration' as string]: `${duration}s` }}>
+        {repeatedItems.map((item, index) => {
+          const Icon = getSkillIcon(item.iconKey);
+
+          return (
+            <div
+              key={`${item.label}-${index}`}
+              className="flex shrink-0 items-center gap-3 whitespace-nowrap rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-medium text-neutral-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+            >
+              <span className="grid h-9 w-9 place-items-center rounded-full border border-white/10 bg-black/40 text-neutral-200">
+                <Icon aria-hidden="true" className="h-4.5 w-4.5" />
+              </span>
+              <span>{item.label}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -439,10 +415,6 @@ export function AboutPage() {
                 <h3 className="text-sm font-semibold tracking-[0.15em] uppercase text-neutral-400">
                   {group.title}
                 </h3>
-
-                <span className="text-xs text-neutral-500">
-                  {group.items.length}
-                </span>
               </div>
 
               <div className="mt-5 flex flex-wrap gap-2">
