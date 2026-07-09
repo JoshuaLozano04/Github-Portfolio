@@ -69,6 +69,15 @@ type HomeSkillGroup = {
   items: HomeSkillItem[];
 };
 
+type SkillTickerDirection = 'left' | 'right';
+
+type SkillTickerRow = {
+  title: string;
+  direction: SkillTickerDirection;
+  speed: number;
+  skills: HomeSkillItem[];
+};
+
 const homeSkillGroups: HomeSkillGroup[] = [
   {
     title: 'Programming Languages',
@@ -97,6 +106,50 @@ const homeSkillGroups: HomeSkillGroup[] = [
   {
     title: 'Tools & Platforms',
     items: [
+      { label: 'AWS', iconKey: 'aws' },
+      { label: 'Git', iconKey: 'git' },
+      { label: 'GitHub', iconKey: 'github' },
+      { label: 'Docker', iconKey: 'docker' },
+      { label: 'Vercel', iconKey: 'vercel' },
+      { label: 'Figma', iconKey: 'figma' }
+    ]
+  }
+];
+
+const skillTickerRows: SkillTickerRow[] = [
+  {
+    title: 'Programming Languages',
+    direction: 'left',
+    speed: 30,
+    skills: [
+      { label: 'Java', iconKey: 'java' },
+      { label: 'Python', iconKey: 'python' },
+      { label: 'TypeScript', iconKey: 'typescript' },
+      { label: 'Kotlin', iconKey: 'kotlin' },
+      { label: 'PHP', iconKey: 'php' },
+      { label: 'HTML', iconKey: 'html' },
+      { label: 'CSS', iconKey: 'css' }
+    ]
+  },
+  {
+    title: 'Frameworks & Technologies',
+    direction: 'right',
+    speed: 24,
+    skills: [
+      { label: 'Flutter', iconKey: 'flutter' },
+      { label: 'Node.js', iconKey: 'node' },
+      { label: 'Django', iconKey: 'django' },
+      { label: 'Laravel', iconKey: 'laravel' },
+      { label: 'PostgreSQL', iconKey: 'postgresql' },
+      { label: 'MySQL', iconKey: 'mysql' },
+      { label: 'MongoDB', iconKey: 'mongodb' }
+    ]
+  },
+  {
+    title: 'Tools & Platforms',
+    direction: 'left',
+    speed: 34,
+    skills: [
       { label: 'AWS', iconKey: 'aws' },
       { label: 'Git', iconKey: 'git' },
       { label: 'GitHub', iconKey: 'github' },
@@ -193,49 +246,65 @@ export function HomePage() {
 
 function HomeSkillsPreview() {
   return (
-    <motion.section className="grid gap-5" variants={staggerReveal}>
-      {homeSkillGroups.map((group, index) => (
-        <motion.article
-          key={group.title}
-          className="group overflow-hidden rounded-[1.75rem] border border-white/10 bg-neutral-950/80 px-5 py-5 shadow-[0_24px_70px_rgba(0,0,0,0.32)]"
-          variants={itemReveal}
-          whileHover={{ y: -2, transition: { duration: 0.25, ease: premiumEase } }}
-        >
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold text-white">{group.title}</h3>
-          </div>
-
-          <MarqueeRow items={group.items} />
-        </motion.article>
+    <motion.section className="grid gap-8" variants={staggerReveal}>
+      {skillTickerRows.map((row) => (
+        <SkillTicker key={row.title} title={row.title} direction={row.direction} speed={row.speed} skills={row.skills} />
       ))}
     </motion.section>
   );
 }
 
-function MarqueeRow({ items }: { items: HomeSkillItem[] }) {
-  const repeatedItems = [...items, ...items];
-  const duration = Math.max(14, items.length * 3.5);
+function SkillTicker({ title, direction, speed, skills }: SkillTickerRow) {
+  const tickerId = `skill-ticker-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+  const trackClassName = direction === 'right' ? 'skill-ticker__track skill-ticker__track--right' : 'skill-ticker__track';
 
   return (
-    <div className="overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-      <div className="marquee-track flex w-max items-center gap-3" style={{ ['--marquee-duration' as string]: `${duration}s` }}>
-        {repeatedItems.map((item, index) => {
-          const Icon = getSkillIcon(item.iconKey);
-
-          return (
-            <div
-              key={`${item.label}-${index}`}
-              className="flex shrink-0 items-center gap-3 whitespace-nowrap rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-medium text-neutral-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
-            >
-              <span className="grid h-9 w-9 place-items-center rounded-full border border-white/10 bg-black/40 text-neutral-200">
-                <Icon aria-hidden="true" className="h-4.5 w-4.5" />
-              </span>
-              <span>{item.label}</span>
-            </div>
-          );
-        })}
+    <motion.article className="w-full min-w-0 space-y-4 border-t border-white/5 pt-6 first:border-t-0 first:pt-0" variants={itemReveal} whileHover={{ y: -2, transition: { duration: 0.22, ease: premiumEase } }}>
+      <div className="flex items-baseline justify-between gap-4">
+        <h3 id={tickerId} className="text-sm font-semibold uppercase tracking-[0.22em] text-neutral-400 sm:text-[0.9rem]">
+          {title}
+        </h3>
       </div>
-    </div>
+
+      <ul className="sr-only">
+        {skills.map((skill) => (
+          <li key={skill.label}>{skill.label}</li>
+        ))}
+      </ul>
+
+      <div className="skill-ticker__viewport w-full min-w-0 max-w-full" aria-labelledby={tickerId}>
+        <div className={trackClassName} style={{ ['--skill-ticker-duration' as string]: `${speed}s` }}>
+          <div className="skill-ticker__group">
+            <SkillTickerGroup skills={skills} />
+          </div>
+          <div aria-hidden="true" className="skill-ticker__group">
+            <SkillTickerGroup skills={skills} />
+          </div>
+        </div>
+      </div>
+    </motion.article>
+  );
+}
+
+function SkillTickerGroup({ skills }: { skills: HomeSkillItem[] }) {
+  return (
+    <>
+      {skills.map((skill) => {
+        const Icon = getSkillIcon(skill.iconKey);
+
+        return (
+          <div
+            key={skill.label}
+            className="inline-flex shrink-0 items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-medium whitespace-nowrap text-neutral-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-white/15 hover:bg-white/[0.07] hover:shadow-[0_10px_24px_rgba(0,0,0,0.16)] sm:text-[15px]"
+          >
+            <span className="grid h-8 w-8 place-items-center rounded-full border border-white/10 bg-black/35 text-neutral-200 sm:h-9 sm:w-9">
+              <Icon aria-hidden="true" className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+            </span>
+            <span>{skill.label}</span>
+          </div>
+        );
+      })}
+    </>
   );
 }
 
