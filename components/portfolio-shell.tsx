@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import { usePathname } from 'next/navigation';
-import { HiOutlineEnvelope, HiOutlineHome, HiOutlineInformationCircle, HiOutlineMoon, HiOutlineSquares2X2, HiOutlineSun } from "react-icons/hi2";
+import { HiOutlineHome, HiOutlineInformationCircle, HiOutlineMoon, HiOutlineSquares2X2, HiOutlineSun } from "react-icons/hi2";
 import { ChevronUp, Menu, X } from 'lucide-react';
 import type { LocaleCopy } from "@/data/portfolio";
 import { useTheme } from '@/components/theme-provider';
@@ -181,7 +181,6 @@ function PortfolioHeader({ pathname, isScrolled }: { pathname: string; isScrolle
             <NavLink href="/" active={pathname === '/'} icon={<HiOutlineHome />} label={copy.nav.home} />
             <NavLink href="/projects" active={pathname.startsWith('/projects')} icon={<HiOutlineSquares2X2 />} label={copy.nav.projects} />
             <NavLink href="/about" active={pathname.startsWith('/about')} icon={<HiOutlineInformationCircle />} label={copy.nav.about} />
-            <NavLink href="/contacts" active={pathname.startsWith('/contacts')} icon={<HiOutlineEnvelope />} label={copy.nav.contacts} />
           </nav>
         </div>
 
@@ -214,7 +213,6 @@ function PortfolioHeader({ pathname, isScrolled }: { pathname: string; isScrolle
                   <NavLink href="/" active={pathname === '/'} icon={<HiOutlineHome />} label={copy.nav.home} />
                   <NavLink href="/projects" active={pathname.startsWith('/projects')} icon={<HiOutlineSquares2X2 />} label={copy.nav.projects} />
                   <NavLink href="/about" active={pathname.startsWith('/about')} icon={<HiOutlineInformationCircle />} label={copy.nav.about} />
-                  <NavLink href="/contacts" active={pathname.startsWith('/contacts')} icon={<HiOutlineEnvelope />} label={copy.nav.contacts} />
                 </div>
               </motion.div>
             )}

@@ -168,11 +168,6 @@ export function HomePage() {
                 Based in <span className={theme === 'ink' ? 'text-black' : 'text-neutral-100'}>{copy.hero.location}</span>
               </p>
 
-              <div className="mt-7 flex flex-wrap items-center gap-3">
-                <ActionLink href="/contacts" icon={<ArrowRightIcon />} label="Contact me" variant="primary" />
-                <ActionLink href="/projects" icon={<GridIcon />} label="View works" variant="secondary" />
-              </div>
-
               <div className="mt-5 flex flex-wrap items-center gap-3">
                 <SocialIconLink href="mailto:melchizedek.lozano@gmail.com" label="Email" icon={<EmailIcon />} />
                 <SocialIconLink href="https://www.linkedin.com/in/joshua-lozano" label="LinkedIn" icon={<LinkedInIcon />} external />
@@ -214,7 +209,7 @@ export function HomePage() {
             <h2 className="text-2xl font-semibold text-white">{copy.hero.ctaTitle}</h2>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-neutral-400">{copy.hero.ctaDescription}</p>
           </div>
-          <ActionLink href="/contacts" icon={<ArrowRightIcon />} label={copy.hero.ctaButton} variant="primary" />
+          <ActionLink href="mailto:melchizedek.lozano@gmail.com" icon={<ArrowRightIcon />} label={copy.hero.ctaButton} variant="primary" />
         </div>
       </motion.section>
     </motion.main>

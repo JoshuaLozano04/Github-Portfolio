@@ -15,7 +15,6 @@ export type LocaleCopy = {
     home: string;
     projects: string;
     about: string;
-    contacts: string;
   };
   theme: {
     night: string;
@@ -57,7 +56,7 @@ export type LocaleCopy = {
 
 /* Export single-language copy (English) — translation feature removed */
 export const portfolioCopy: LocaleCopy = {
-  nav: { home: 'Home', projects: 'Projects', about: 'About', contacts: 'Contacts' },
+  nav: { home: 'Home', projects: 'Projects', about: 'About' },
   theme: { night: 'Night mode', dark: 'Dark mode' },
   hero: {
     eyebrow: 'Professional Portfolio',
@@ -68,7 +67,7 @@ export const portfolioCopy: LocaleCopy = {
     featuredDescription: '',
     ctaTitle: 'Ready to work together?',
     ctaDescription: 'Whether you have a project in mind, a collaboration opportunity, or simply want to connect, I’d be glad to hear from you. Feel free to reach out and let’s create something meaningful together.',
-    ctaButton: 'Go to Contacts',
+    ctaButton: 'Contact me',
     toolsTitle: 'Programming Languages and Tools',
     toolsDescription: '',
     projectsTitle: 'Projects',
