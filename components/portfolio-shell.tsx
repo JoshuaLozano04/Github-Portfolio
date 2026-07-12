@@ -170,7 +170,7 @@ function PortfolioHeader({ pathname, isScrolled }: { pathname: string; isScrolle
     >
       <div className={`mx-auto grid w-[min(1200px,calc(100%-32px))] grid-cols-[1fr_auto_1fr] items-center gap-4 py-5 transition-[padding] duration-300 ${isScrolled ? 'py-4' : 'py-5'}`}>
         <a href="/" className="flex items-center gap-3">
-          <div className="grid h-11 w-11 place-items-center rounded-2xl border border-white/15 bg-gradient-to-br from-white/10 to-black text-white shadow-soft">JS</div>
+          <div className="grid h-11 w-11 place-items-center rounded-2xl border border-white/15 bg-gradient-to-br from-white/10 to-black text-[0.65rem] font-bold tracking-widest text-white shadow-soft">MJL</div>
           <div>
             <div className="max-w-[170px] text-xs font-semibold leading-tight tracking-[0.015em] sm:max-w-none sm:text-sm">Melchizedek Joshua Lozano</div>
           </div>
@@ -184,7 +184,7 @@ function PortfolioHeader({ pathname, isScrolled }: { pathname: string; isScrolle
           </nav>
         </div>
 
-        <div className="relative col-start-2 justify-self-center lg:hidden">
+        <div className="relative col-start-3 justify-self-end lg:hidden">
           <motion.button
             type="button"
             aria-label={isMobileNavOpen ? 'Close navigation menu' : 'Open navigation menu'}
@@ -203,7 +203,7 @@ function PortfolioHeader({ pathname, isScrolled }: { pathname: string; isScrolle
             {isMobileNavOpen && (
               <motion.div
                 id="mobile-navigation-menu"
-                className="absolute left-1/2 top-[calc(100%+0.75rem)] z-50 min-w-56 -translate-x-1/2 overflow-hidden rounded-[1.5rem] border border-white/10 bg-black/95 p-2 shadow-[0_24px_60px_rgba(0,0,0,0.36)] backdrop-blur-xl"
+                className="absolute right-0 top-[calc(100%+0.75rem)] z-50 min-w-56 overflow-hidden rounded-[1.5rem] border border-white/10 bg-black/95 p-2 shadow-[0_24px_60px_rgba(0,0,0,0.36)] backdrop-blur-xl"
                 initial={{ opacity: 0, y: -10, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -10, scale: 0.98 }}
@@ -213,13 +213,32 @@ function PortfolioHeader({ pathname, isScrolled }: { pathname: string; isScrolle
                   <NavLink href="/" active={pathname === '/'} icon={<HiOutlineHome />} label={copy.nav.home} />
                   <NavLink href="/projects" active={pathname.startsWith('/projects')} icon={<HiOutlineSquares2X2 />} label={copy.nav.projects} />
                   <NavLink href="/about" active={pathname.startsWith('/about')} icon={<HiOutlineInformationCircle />} label={copy.nav.about} />
+                  {/* Dark mode toggle — shown only inside mobile menu */}
+                  <div className="mt-1 border-t border-white/10 pt-1">
+                    <motion.button
+                      type="button"
+                      onClick={() => { toggleTheme(); setIsMobileNavOpen(false); }}
+                      aria-label={theme === 'midnight' ? copy.theme.night : copy.theme.dark}
+                      title="Toggle theme"
+                      className="group relative inline-flex w-full items-center gap-2 rounded-full px-5 py-2.5 text-sm text-neutral-400 transition hover:text-white"
+                      whileHover={{ y: -1 }}
+                      whileTap={{ scale: 0.99 }}
+                      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                      <span className="text-neutral-400 group-hover:text-white">
+                        {!mounted ? <HiOutlineMoon /> : theme === 'midnight' ? <HiOutlineMoon /> : <HiOutlineSun />}
+                      </span>
+                      <span>{theme === 'midnight' ? 'Dark Mode' : 'Light Mode'}</span>
+                    </motion.button>
+                  </div>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
-        <div className="col-start-3 flex items-center justify-self-end gap-3">
+        {/* Dark mode button — visible only on desktop (lg+); on mobile it lives inside the burger menu */}
+        <div className="col-start-3 hidden items-center justify-self-end gap-3 lg:flex">
           <motion.button type="button" onClick={toggleTheme} aria-label={theme === 'midnight' ? copy.theme.night : copy.theme.dark} title="Toggle theme" className="grid h-11 w-11 place-items-center rounded-2xl border border-white/10 bg-neutral-900/80 text-white transition hover:border-white/20" whileHover={{ y: -1, scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}>
             {!mounted ? <HiOutlineMoon /> : theme === 'midnight' ? <HiOutlineMoon /> : <HiOutlineSun />}
           </motion.button>
