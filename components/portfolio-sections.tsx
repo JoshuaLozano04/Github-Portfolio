@@ -624,68 +624,35 @@ type GitHubProfile = {
   public_gists: number;
 };
 
-type GitHubRepo = {
-  language: string | null;
-  stargazers_count: number;
+const DEFAULT_PROFILE: GitHubProfile = {
+  public_repos: 5,
+  followers: 1,
+  following: 1,
+  public_gists: 0
 };
 
 function GitHubStatsPanel({ username }: { username: string }) {
-  const [profile, setProfile] = useState<GitHubProfile | null>(null);
-  const [topLanguages, setTopLanguages] = useState<Array<{ name: string; count: number }>>([]);
-  const [profileError, setProfileError] = useState<string | null>(null);
+  const [profile, setProfile] = useState<GitHubProfile>(DEFAULT_PROFILE);
   const [graphFailed, setGraphFailed] = useState(false);
-  const [langsFailed, setLangsFailed] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
 
     const loadStats = async () => {
       try {
-        const [profileResponse, reposResponse] = await Promise.all([
-          fetch(`https://api.github.com/users/${username}`, {
-            signal: controller.signal,
-            headers: { Accept: 'application/vnd.github+json' }
-          }),
-          fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated`, {
-            signal: controller.signal,
-            headers: { Accept: 'application/vnd.github+json' }
-          })
-        ]);
-
-        if (!profileResponse.ok) {
-          throw new Error('Unable to load GitHub profile stats.');
-        }
-
-        const profileData = (await profileResponse.json()) as GitHubProfile;
-        setProfile(profileData);
-
-        if (!reposResponse.ok) {
-          throw new Error('Unable to load GitHub repository data.');
-        }
-
-        const repos = (await reposResponse.json()) as GitHubRepo[];
-        const languageCounts = new Map<string, number>();
-
-        repos.forEach((repo) => {
-          if (!repo.language) {
-            return;
-          }
-
-          languageCounts.set(repo.language, (languageCounts.get(repo.language) ?? 0) + 1);
+        const profileResponse = await fetch(`https://api.github.com/users/${username}`, {
+          signal: controller.signal,
+          headers: { Accept: 'application/vnd.github+json' }
         });
 
-        setTopLanguages(
-          Array.from(languageCounts.entries())
-            .sort((first, second) => second[1] - first[1])
-            .slice(0, 4)
-            .map(([name, count]) => ({ name, count }))
-        );
-      } catch (error) {
-        if (controller.signal.aborted) {
-          return;
-        }
+        if (controller.signal.aborted) return;
 
-        setProfileError(error instanceof Error ? error.message : 'Unable to load GitHub stats.');
+        if (profileResponse.ok) {
+          const profileData = (await profileResponse.json()) as GitHubProfile;
+          setProfile(profileData);
+        }
+      } catch {
+        // Silently preserve robust defaults if fetch is interrupted or rate limited
       }
     };
 
@@ -697,18 +664,17 @@ function GitHubStatsPanel({ username }: { username: string }) {
   const totalRepos = profile?.public_repos ?? 0;
   const followers = profile?.followers ?? 0;
   const following = profile?.following ?? 0;
-  const graphUrl = `https://github-readme-activity-graph.vercel.app/graph?username=${username}&theme=github-compact&hide_border=true&area=true`;
-  const languagesUrl = `/api/github-top-langs?username=${username}`;
+  const graphUrl = `/api/github-graph?username=${username}`;
 
   return (
-    <div className="mt-6 grid gap-4 lg:grid-cols-2 lg:items-start">
+    <div className="mt-6">
       <div className="rounded-[1.5rem] bg-black/20 p-2.5 sm:p-3">
         {!graphFailed ? (
           <img
             src={graphUrl}
             alt="GitHub contribution graph"
             className="mx-auto block h-auto w-full max-w-none rounded-[1rem] object-contain"
-            loading="lazy"
+            loading="eager"
             onError={() => setGraphFailed(true)}
           />
         ) : (
@@ -722,39 +688,6 @@ function GitHubStatsPanel({ username }: { username: string }) {
               <GitHubMetric label="Followers" value={followers} />
               <GitHubMetric label="Following" value={following} />
             </div>
-          </div>
-        )}
-      </div>
-
-      <div className="rounded-[1.5rem] bg-black/20 p-2.5 sm:p-3">
-        {!langsFailed ? (
-          <img
-            src={languagesUrl}
-            alt="Top programming languages card"
-            className="mx-auto block h-auto w-full max-w-none rounded-[1rem] object-contain"
-            loading="eager"
-            onError={() => setLangsFailed(true)}
-          />
-        ) : topLanguages.length ? (
-          <div className="rounded-[1.25rem] bg-white/[0.03] p-5">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">Top languages fallback</p>
-            <div className="mt-4 grid gap-3">
-              {topLanguages.map((item) => (
-                <div key={item.name} className="rounded-[1.25rem] bg-white/[0.03] px-4 py-3">
-                  <div className="flex items-center justify-between gap-4 text-sm text-neutral-200">
-                    <span>{item.name}</span>
-                    <span className="text-neutral-400">{item.count} repos</span>
-                  </div>
-                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
-                    <div className="h-full rounded-full bg-gradient-to-r from-cyan-300 to-sky-500" style={{ width: `${Math.max(18, (item.count / Math.max(1, topLanguages[0]?.count ?? 1)) * 100)}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="rounded-[1.25rem] bg-white/[0.03] p-5 text-sm leading-7 text-neutral-300">
-            Loading top language data...
           </div>
         )}
       </div>
