@@ -52,3 +52,12 @@ __pycache__/
 # Misc
 *.local
 node_modules
+
+# TypeScript build info
+tsconfig.tsbuildinfo
+
+# Next.js auto-generated (do not edit or commit)
+next-env.d.ts
+
+# Graphify generated output
+graphify-out/
